@@ -671,6 +671,201 @@ body {
   font-family: var(--font-kr);
   font-size: 1.1rem;
   font-weight: 800;
+color: #A0AEC0;
+}
+
+.key.pressed {
+  transform: translateY(2px);
+  box-shadow: none;
+  background-color: var(--primary-gold);
+  color: #FFF;
+  border-color: var(--primary-gold-hover);
+}
+
+.key.pressed .kr-char,
+.key.pressed .en-char {
+  color: #FFF;
+}
+
+.key.active-guide {
+  background-color: #FFF3C4;
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 8px rgba(217, 138, 29, 0.4);
+}
+
+/* Hands Visual overlay */
+.hands-overlay {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0.25;
+}
+
+/* Word Game (Falling Words Arcade) */
+.word-game-stage {
+  flex: 1;
+  background-color: #1E293B;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+}
+
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(15, 23, 42, 0.8);
+  color: #FFF;
+  z-index: 5;
+}
+
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.hud-value {
+  color: #F59E0B;
+  font-family: var(--font-en);
+  font-size: 1.4rem;
+}
+
+.lives-container {
+  display: flex;
+  gap: 6px;
+  color: #EF4444;
+  font-size: 1.2rem;
+}
+
+.falling-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.falling-word {
+  position: absolute;
+  background-color: #334155;
+  color: #F8FAFC;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: 2px solid #64748B;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.1s linear;
+  white-space: nowrap;
+}
+
+.falling-word.targeted {
+  border-color: #F59E0B;
+  background-color: #1E293B;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+}
+
+.game-input-container {
+  padding: 16px 24px;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  justify-content: center;
+  z-index: 5;
+}
+
+.game-input-box {
+  max-width: 400px;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1.3rem;
+  font-family: var(--font-kr);
+  border: 2px solid #475569;
+  border-radius: 25px;
+  background-color: #0F172A;
+  color: #FFF;
+  text-align: center;
+  outline: none;
+}
+
+.game-input-box:focus {
+  border-color: #F59E0B;
+}
+
+/* Modal Popup */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-card {
+  background: #FFF;
+  border-radius: 24px;
+  padding: 36px 40px;
+  max-width: 460px;
+  width: 90%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.modal-results {
+  background-color: var(--primary-gold-light);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.result-row .val {
+  font-family: var(--font-en);
+  color: var(--primary-gold);
+  font-size: 1.2rem;
+}
+
+.primary-action-btn {
+  padding: 14px 28px;
+  background-color: var(--primary-gold);
+  color: #FFF;
+  border: none;
+  border-radius: 16px;
+  font-family: var(--font-kr);
+  font-size: 1.1rem;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 4px 12px rgba(217, 138, 29, 0.4);
@@ -679,7 +874,6 @@ body {
 .primary-action-btn:hover {
   background-color: var(--primary-gold-hover);
   transform: translateY(-2px);
-}
 }
 
 .hidden {
