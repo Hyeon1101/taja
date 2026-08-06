@@ -30,10 +30,15 @@ class HancomTajaApp {
 
     this.initElements();
     this.bindEvents();
-    this.switchMode('short');
+    // Do not auto-start a mode here, wait for landing screen selection
   }
 
   initElements() {
+    // Landing UI
+    this.landingScreen = document.getElementById('landing-screen');
+    this.mainApp = document.getElementById('main-app');
+    this.modeCards = document.querySelectorAll('.mode-card');
+
     // Mode UI
     this.modeBadge = document.getElementById('mode-badge');
     this.tabBtns = document.querySelectorAll('.tab-btn');
@@ -74,6 +79,14 @@ class HancomTajaApp {
   }
 
   bindEvents() {
+    // Landing Screen mode selection
+    this.modeCards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        const mode = e.currentTarget.dataset.launch;
+        this.hideLandingScreen(mode);
+      });
+    });
+
     // Tab switching
     this.tabBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -132,6 +145,24 @@ class HancomTajaApp {
       this.resultModal.classList.add('hidden');
       this.switchMode(this.currentMode);
     });
+  }
+
+  // --- LANDING SCREEN LOGIC ---
+  hideLandingScreen(mode) {
+    if (this.landingScreen) {
+      // Play a positive sound when starting
+      soundEngine.playCompleteLine();
+      
+      this.landingScreen.classList.add('fade-out');
+      setTimeout(() => {
+        this.landingScreen.style.display = 'none';
+        this.mainApp.classList.remove('hidden');
+        this.switchMode(mode);
+      }, 600);
+    } else {
+      this.mainApp.classList.remove('hidden');
+      this.switchMode(mode);
+    }
   }
 
   // --- MODE SWITCHING ---

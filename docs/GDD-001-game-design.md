@@ -12,6 +12,10 @@
 
 ## 🔁 Core Loop & Mechanics
 
+### 0. Game Start / Landing Screen
+- **Input**: User clicks on one of three premium mode cards (Short, Long, Game) featuring custom thumbnail covers.
+- **Feedback**: Magnetic hover effects on cards, glass morphism aesthetics, and a smooth slide-out transition revealing the main game stage.
+- **Completion**: Mode initializes only after selection, triggering an encouraging chime sound.
 ### 1. Short Sentence Practice (단문 연습)
 - **Input**: User types single-line sentences (e.g. proverbs, famous quotes).
 - **Feedback**: Real-time character highlighting (Green/Normal for correct, Red with highlight for error, Pulsing Yellow underline for current character).

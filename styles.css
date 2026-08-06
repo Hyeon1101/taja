@@ -684,3 +684,117 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* =========================================
+   Premium Landing Screen (Senior Developer)
+   ========================================= */
+
+.landing-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, #2D3748 0%, #1A202C 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-screen.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.landing-content {
+  text-align: center;
+  max-width: 1000px;
+  width: 100%;
+  padding: 40px;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.landing-title {
+  font-family: var(--font-kr);
+  font-size: 4rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #FBECC7, #D98A1D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 20px rgba(217, 138, 29, 0.3);
+}
+
+.landing-subtitle {
+  font-family: var(--font-kr);
+  font-size: 1.4rem;
+  color: #A0AEC0;
+  margin-bottom: 50px;
+}
+
+.mode-cards-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Luxury Glass Morphism */
+.luxury-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(30px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+/* Magnetic Element Hover */
+.magnetic-element {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.magnetic-element:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(217, 138, 29, 0.2);
+  border-color: rgba(217, 138, 29, 0.4);
+}
+
+.card-cover {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-body {
+  padding: 24px;
+  text-align: left;
+}
+
+.card-title {
+  color: #FFF;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.card-desc {
+  color: #CBD5E0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
