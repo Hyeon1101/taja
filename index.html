@@ -15,40 +15,91 @@
     <span>로그인 없이 무료로 모든 타자 연습과 게임을 즐기실 수 있습니다.</span>
   </header>
 
-  <!-- Premium Landing Screen -->
+  <!-- Premium Vibrant Landing Screen -->
   <div id="landing-screen" class="landing-screen">
-    <div class="landing-content">
-      <h1 class="landing-title gradient-text">한컴 타자</h1>
-      <p class="landing-subtitle">어느 연습을 시작할까요?</p>
-      
+    <!-- Ambient Background Glows -->
+    <div class="glow-orb glow-orange"></div>
+    <div class="glow-orb glow-blue"></div>
+
+    <div class="landing-inner">
+      <!-- Top Brand Header -->
+      <header class="landing-header">
+        <div class="brand-logo">
+          <div class="logo-icon"><i class="fa-solid fa-keyboard"></i></div>
+          <span class="logo-text">한컴타자<span class="logo-sub">ONLINE</span></span>
+        </div>
+        <div class="landing-header-right">
+          <span class="online-status-pill"><span class="pulse-dot"></span> 무료 이용 가능</span>
+        </div>
+      </header>
+
+      <!-- Hero Title Section -->
+      <section class="landing-hero">
+        <div class="hero-badge"><i class="fa-solid fa-sparkles"></i> 100% 무료 타자 연습 &amp; 아케이드 게임</div>
+        <h1 class="landing-hero-title">더 빠르고 재미있게,<br><span class="highlight-text">한컴 타자</span>를 즐겨보세요!</h1>
+        <p class="landing-hero-subtitle">원하는 모드를 선택하면 로그인 없이 즉시 연습이 시작됩니다.</p>
+      </section>
+
+      <!-- Mode Cards Grid -->
       <div class="mode-cards-container">
         <!-- Short Practice Card -->
-        <div class="mode-card magnetic-element luxury-glass" data-launch="short">
-          <div class="card-cover" style="background-image: url('assets/cover_short.jpg');"></div>
+        <div class="mode-card card-orange magnetic-element" data-launch="short">
+          <div class="card-badge-wrap">
+            <span class="card-badge badge-orange">⚡ 속도 순발력</span>
+          </div>
+          <div class="card-cover-box">
+            <img src="assets/cover_short.jpg" alt="단문 연습" class="card-img">
+          </div>
           <div class="card-body">
             <h3 class="card-title">단문 연습</h3>
-            <p class="card-desc">짧은 문구와 속담으로 타수를 높이세요.</p>
+            <p class="card-desc">속담과 명언을 빠르게 따라 치며 실시간 타수를 측정해보세요.</p>
+            <div class="card-btn-wrap">
+              <span class="card-action-btn btn-orange">단문 시작 <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
           </div>
         </div>
 
         <!-- Long Practice Card -->
-        <div class="mode-card magnetic-element luxury-glass" data-launch="long">
-          <div class="card-cover" style="background-image: url('assets/cover_long.jpg');"></div>
+        <div class="mode-card card-blue magnetic-element" data-launch="long">
+          <div class="card-badge-wrap">
+            <span class="card-badge badge-blue">📜 문학 집중</span>
+          </div>
+          <div class="card-cover-box">
+            <img src="assets/cover_long.jpg" alt="장문 연습" class="card-img">
+          </div>
           <div class="card-body">
             <h3 class="card-title">장문 연습</h3>
-            <p class="card-desc">애국가, 훈민정음 등 긴 글을 타건하세요.</p>
+            <p class="card-desc">애국가, 훈민정음, 윤동주 시인의 명작을 긴 글로 정갈하게 타건하세요.</p>
+            <div class="card-btn-wrap">
+              <span class="card-action-btn btn-blue">장문 시작 <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
           </div>
         </div>
 
         <!-- Word Game Card -->
-        <div class="mode-card magnetic-element luxury-glass" data-launch="game">
-          <div class="card-cover" style="background-image: url('assets/cover_game.jpg');"></div>
+        <div class="mode-card card-purple magnetic-element" data-launch="game">
+          <div class="card-badge-wrap">
+            <span class="card-badge badge-purple">🎮 디펜스 게임</span>
+          </div>
+          <div class="card-cover-box">
+            <img src="assets/cover_game.jpg" alt="낱말 게임" class="card-img">
+          </div>
           <div class="card-body">
             <h3 class="card-title">낱말 게임</h3>
-            <p class="card-desc">떨어지는 낱말을 입력하여 방어하세요.</p>
+            <p class="card-desc">하늘에서 쏟아지는 단어를 파괴하는 스릴 만점 한글 아케이드!</p>
+            <div class="card-btn-wrap">
+              <span class="card-action-btn btn-purple">게임 플레이 <i class="fa-solid fa-gamepad"></i></span>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Trust Feature Footer -->
+      <footer class="landing-footer-features">
+        <div class="feature-item"><i class="fa-solid fa-circle-check"></i> 2벌식 표준 한글 자판 매핑</div>
+        <div class="feature-item"><i class="fa-solid fa-chart-line"></i> 실시간 타수 / 정확도 / 오타 분석</div>
+        <div class="feature-item"><i class="fa-solid fa-volume-high"></i> 타격감 넘치는 기계식 키보드 사운드</div>
+      </footer>
     </div>
   </div>
 
