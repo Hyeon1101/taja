@@ -542,6 +542,7 @@ class HancomTajaApp {
   startWordGame() {
     this.stopWordGameLoop();
     this.fallingArea.innerHTML = '';
+    this.fallingWords = [];
     this.gameScore = 0;
     this.gameLevel = 1;
     this.gameLives = 5;
