@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한컴 타자 연습 - 온라인 타자 게임</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Banner -->
+  <header class="top-banner">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <span>로그인 없이 무료로 모든 타자 연습과 게임을 즐기실 수 있습니다.</span>
+  </header>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <button class="back-btn" id="btn-back">
+          <i class="fa-solid fa-arrow-left"></i> 타자 연습으로 돌아가기
+        </button>
+
+        <div class="mode-badge" id="mode-badge">
+          단문연습
+        </div>
+
+        <div class="mascot-box">
+          <div class="mascot-avatar">
+            <span class="mascot-ghost">👻</span>
+          </div>
+        </div>
+
+        <!-- 진행중 통계 (Real-time Statistics) -->
+        <section class="stats-panel">
+          <h3 class="stats-title">진행중 통계</h3>
+          
+          <div class="stat-item">
+            <div class="stat-label">
+              <span>진행시간(초)</span>
+            </div>
+            <div class="stat-value" id="stat-time">00:00</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">
+              <span>타수(타/분)</span>
+            </div>
+            <div class="stat-value" id="stat-cpm">0</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">
+              <span>정확도(%)</span>
+              <span class="stat-sublabel" id="stat-errors-sub">오타 0</span>
+            </div>
+            <div class="stat-value" id="stat-acc">0.00</div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="sidebar-footer">
+        출처: 애국가, 윤동주, 이육사, 세종대왕<br>
+        한컴 타자 연습 Web WebApp
+      </footer>
+    </aside>
+
+    <!-- Main Stage Area -->
+    <main class="main-content">
+      
+      <!-- Top Navigation Tabs -->
+      <nav class="mode-nav">
+        <div class="tab-group">
+          <button class="tab-btn active" data-mode="short">
+            <i class="fa-solid fa-font"></i> 단문 연습
+          </button>
+          <button class="tab-btn" data-mode="long">
+            <i class="fa-solid fa-align-left"></i> 장문 연습
+          </button>
+          <button class="tab-btn" data-mode="game">
+            <i class="fa-solid fa-gamepad"></i> 낱말 게임
+          </button>
+        </div>
+
+        <div class="nav-controls">
+          <select id="category-select" class="category-select">
+            <!-- Populated via JS based on mode -->
+          </select>
+
+          <button id="btn-sound" class="sound-toggle-btn" title="음소거 설정">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Stage: Short / Long Text Practice -->
+      <div id="text-practice-stage" class="view-stage">
+        
+        <div class="typing-header-card" id="practice-title">
+          <span>애국가 1절</span>
+          <span class="sentence-progress" id="sentence-progress">1 / 10</span>
+        </div>
+
+        <div class="typing-board">
+          <div class="lines-container" id="lines-container">
+            <!-- Dynamic lines generated here -->
+          </div>
+
+          <input type="text" id="typing-input" class="user-input-box" placeholder="여기에 따라 입력하세요..." autocomplete="off" spellcheck="false">
+        </div>
+
+        <!-- Virtual Keyboard -->
+        <section class="keyboard-section">
+          <div class="keyboard-container" id="virtual-keyboard">
+            <!-- Row 1 -->
+            <div class="kb-row">
+              <div class="key" data-key="`"><span class="kr-char">~</span><span class="en-char">`</span></div>
+              <div class="key" data-key="1"><span class="kr-char">!</span><span class="en-char">1</span></div>
+              <div class="key" data-key="2"><span class="kr-char">@</span><span class="en-char">2</span></div>
+              <div class="key" data-key="3"><span class="kr-char">#</span><span class="en-char">3</span></div>
+              <div class="key" data-key="4"><span class="kr-char">$</span><span class="en-char">4</span></div>
+              <div class="key" data-key="5"><span class="kr-char">%</span><span class="en-char">5</span></div>
+              <div class="key" data-key="6"><span class="kr-char">^</span><span class="en-char">6</span></div>
+              <div class="key" data-key="7"><span class="kr-char">&</span><span class="en-char">7</span></div>
+              <div class="key" data-key="8"><span class="kr-char">*</span><span class="en-char">8</span></div>
+              <div class="key" data-key="9"><span class="kr-char">(</span><span class="en-char">9</span></div>
+              <div class="key" data-key="0"><span class="kr-char">)</span><span class="en-char">0</span></div>
+              <div class="key" data-key="-"><span class="kr-char">_</span><span class="en-char">-</span></div>
+              <div class="key" data-key="="><span class="kr-char">+</span><span class="en-char">=</span></div>
+              <div class="key wide" data-key="Backspace"><span class="kr-char">←</span><span class="en-char">Backspace</span></div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="kb-row">
+              <div class="key wide" data-key="Tab"><span class="kr-char">Tab</span></div>
+              <div class="key" data-key="q" data-kr="ㅂ"><span class="kr-char">ㅂ</span><span class="en-char">Q</span></div>
+              <div class="key" data-key="w" data-kr="ㅈ"><span class="kr-char">ㅈ</span><span class="en-char">W</span></div>
+              <div class="key" data-key="e" data-kr="ㄷ"><span class="kr-char">ㄷ</span><span class="en-char">E</span></div>
+              <div class="key" data-key="r" data-kr="ㄱ"><span class="kr-char">ㄱ</span><span class="en-char">R</span></div>
+              <div class="key" data-key="t" data-kr="ㅅ"><span class="kr-char">ㅅ</span><span class="en-char">T</span></div>
+              <div class="key" data-key="y" data-kr="ㅛ"><span class="kr-char">ㅛ</span><span class="en-char">Y</span></div>
+              <div class="key" data-key="u" data-kr="ㅕ"><span class="kr-char">ㅕ</span><span class="en-char">U</span></div>
+              <div class="key" data-key="i" data-kr="ㅑ"><span class="kr-char">ㅑ</span><span class="en-char">I</span></div>
+              <div class="key" data-key="o" data-kr="ㅐ"><span class="kr-char">ㅐ</span><span class="en-char">O</span></div>
+              <div class="key" data-key="p" data-kr="ㅔ"><span class="kr-char">ㅔ</span><span class="en-char">P</span></div>
+              <div class="key" data-key="["><span class="kr-char">{</span><span class="en-char">[</span></div>
+              <div class="key" data-key="]"><span class="kr-char">}</span><span class="en-char">]</span></div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="kb-row">
+              <div class="key wide" data-key="CapsLock"><span class="kr-char">Caps</span></div>
+              <div class="key" data-key="a" data-kr="ㅁ"><span class="kr-char">ㅁ</span><span class="en-char">A</span></div>
+              <div class="key" data-key="s" data-kr="ㄴ"><span class="kr-char">ㄴ</span><span class="en-char">S</span></div>
+              <div class="key" data-key="d" data-kr="ㅇ"><span class="kr-char">ㅇ</span><span class="en-char">D</span></div>
+              <div class="key" data-key="f" data-kr="ㄹ"><span class="kr-char">ㄹ</span><span class="en-char">F</span></div>
+              <div class="key" data-key="g" data-kr="ㅎ"><span class="kr-char">ㅎ</span><span class="en-char">G</span></div>
+              <div class="key" data-key="h" data-kr="ㅗ"><span class="kr-char">ㅗ</span><span class="en-char">H</span></div>
+              <div class="key" data-key="j" data-kr="ㅓ"><span class="kr-char">ㅓ</span><span class="en-char">J</span></div>
+              <div class="key" data-key="k" data-kr="ㅏ"><span class="kr-char">ㅏ</span><span class="en-char">K</span></div>
+              <div class="key" data-key="l" data-kr="ㅣ"><span class="kr-char">ㅣ</span><span class="en-char">L</span></div>
+              <div class="key" data-key=";"><span class="kr-char">:</span><span class="en-char">;</span></div>
+              <div class="key" data-key="'"><span class="kr-char">"</span><span class="en-char">'</span></div>
+              <div class="key wide" data-key="Enter"><span class="kr-char">Enter</span></div>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="kb-row">
+              <div class="key wide" data-key="Shift"><span class="kr-char">Shift</span></div>
+              <div class="key" data-key="z" data-kr="ㅋ"><span class="kr-char">ㅋ</span><span class="en-char">Z</span></div>
+              <div class="key" data-key="x" data-kr="ㅌ"><span class="kr-char">ㅌ</span><span class="en-char">X</span></div>
+              <div class="key" data-key="c" data-kr="ㅊ"><span class="kr-char">ㅊ</span><span class="en-char">C</span></div>
+              <div class="key" data-key="v" data-kr="ㅍ"><span class="kr-char">ㅍ</span><span class="en-char">V</span></div>
+              <div class="key" data-key="b" data-kr="ㅠ"><span class="kr-char">ㅠ</span><span class="en-char">B</span></div>
+              <div class="key" data-key="n" data-kr="ㅜ"><span class="kr-char">ㅜ</span><span class="en-char">N</span></div>
+              <div class="key" data-key="m" data-kr="ㅡ"><span class="kr-char">ㅡ</span><span class="en-char">M</span></div>
+              <div class="key" data-key=","><span class="kr-char">&lt;</span><span class="en-char">,</span></div>
+              <div class="key" data-key="."><span class="kr-char">&gt;</span><span class="en-char">.</span></div>
+              <div class="key" data-key="/"><span class="kr-char">?</span><span class="en-char">/</span></div>
+              <div class="key wide" data-key="Shift"><span class="kr-char">Shift</span></div>
+            </div>
+
+            <!-- Row 5 -->
+            <div class="kb-row">
+              <div class="key space" data-key=" "><span class="kr-char">Space</span></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Stage: Word Game (Falling Words Arcade) -->
+      <div id="word-game-stage" class="view-stage hidden">
+        <div class="word-game-stage">
+          <div class="game-hud">
+            <div class="hud-item">
+              <span>점수:</span>
+              <span class="hud-value" id="game-score">0</span>
+            </div>
+            <div class="hud-item">
+              <span>레벨:</span>
+              <span class="hud-value" id="game-level">1</span>
+            </div>
+            <div class="lives-container" id="game-lives">
+              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-heart"></i>
+            </div>
+          </div>
+
+          <div class="falling-area" id="falling-area">
+            <!-- Falling words spawned dynamically -->
+          </div>
+
+          <div class="game-input-container">
+            <input type="text" id="game-input" class="game-input-box" placeholder="떨어지는 단어를 입력하고 Enter!" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Result Modal -->
+  <div id="result-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h2 class="modal-title" id="modal-title">연습 완료! 🎉</h2>
+      
+      <div class="modal-results">
+        <div class="result-row">
+          <span>평균 타수</span>
+          <span class="val" id="res-cpm">350 타/분</span>
+        </div>
+        <div class="result-row">
+          <span>최고 타수</span>
+          <span class="val" id="res-max-cpm">420 타/분</span>
+        </div>
+        <div class="result-row">
+          <span>정확도</span>
+          <span class="val" id="res-acc">98.50 %</span>
+        </div>
+        <div class="result-row">
+          <span>소요 시간</span>
+          <span class="val" id="res-time">01:45</span>
+        </div>
+      </div>
+
+      <button id="btn-modal-confirm" class="primary-action-btn">다시 하기</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/texts.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
