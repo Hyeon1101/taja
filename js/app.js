@@ -108,7 +108,7 @@ class HancomTajaApp {
     // Typing Input Events for Short/Long Practice
     this.typingInput.addEventListener('input', (e) => this.handleTypingInput(e));
     this.typingInput.addEventListener('keydown', (e) => {
-      this.highlightKey(e.key, true);
+      this.highlightKey(e, true);
       soundEngine.playKeyPress();
       if (e.key === 'Enter') {
         this.handleLineSubmit();
@@ -116,7 +116,7 @@ class HancomTajaApp {
     });
 
     this.typingInput.addEventListener('keyup', (e) => {
-      this.highlightKey(e.key, false);
+      this.highlightKey(e, false);
     });
 
     // Word Game Input Event
@@ -345,6 +345,7 @@ class HancomTajaApp {
     }
 
     this.updateStatsDisplay();
+    this.highlightGuideKey();
   }
 
   handleLineSubmit() {
@@ -390,18 +391,90 @@ class HancomTajaApp {
   }
 
   // --- VIRTUAL KEYBOARD HIGHLIGHT ---
-  highlightKey(key, isPressed) {
-    if (!key) return;
-    const lowerKey = key.toLowerCase();
+  highlightKey(e, isPressed) {
+    if (!e) return;
+
+    let eventCode = e.code || '';
+    let eventKey = (e.key || '').toLowerCase();
     
     // Find matching key element
     const keys = this.virtualKeyboard.querySelectorAll('.key');
     keys.forEach(k => {
+      const dataCode = k.dataset.code || '';
       const dataKey = (k.dataset.key || '').toLowerCase();
       const dataKr = (k.dataset.kr || '').toLowerCase();
-      if (dataKey === lowerKey || dataKr === lowerKey || (lowerKey === ' ' && dataKey === ' ')) {
+
+      let match = false;
+      if (dataCode && dataCode === eventCode) match = true;
+      else if (dataKey && dataKey === eventKey) match = true;
+      else if (dataKr && dataKr === eventKey) match = true;
+      else if (eventKey === ' ' && (dataKey === ' ' || dataCode === 'Space')) match = true;
+
+      if (match) {
         k.classList.toggle('pressed', isPressed);
       }
+    });
+
+    if (isPressed) {
+      this.highlightGuideKey();
+    }
+  }
+
+  getJamoKeyCodes(char) {
+    const codeMap = {
+      'ㄱ': ['KeyR'], 'ㄲ': ['KeyR'], 'ㄴ': ['KeyS'], 'ㄷ': ['KeyE'], 'ㄸ': ['KeyE'],
+      'ㄹ': ['KeyF'], 'ㅁ': ['KeyA'], 'ㅂ': ['KeyQ'], 'ㅃ': ['KeyQ'], 'ㅅ': ['KeyT'],
+      'ㅆ': ['KeyT'], 'ㅇ': ['KeyD'], 'ㅈ': ['KeyW'], 'ㅉ': ['KeyW'], 'ㅊ': ['KeyC'],
+      'ㅋ': ['KeyZ'], 'ㅌ': ['KeyX'], 'ㅍ': ['KeyV'], 'ㅎ': ['KeyG'],
+      'ㅏ': ['KeyK'], 'ㅐ': ['KeyO'], 'ㅑ': ['KeyI'], 'ㅒ': ['KeyO'], 'ㅓ': ['KeyJ'],
+      'ㅔ': ['KeyP'], 'ㅕ': ['KeyU'], 'ㅖ': ['KeyP'], 'ㅗ': ['KeyH'], 'ㅘ': ['KeyH', 'KeyK'],
+      'ㅙ': ['KeyH', 'KeyO'], 'ㅚ': ['KeyH', 'KeyL'], 'ㅛ': ['KeyY'], 'ㅜ': ['KeyN'],
+      'ㅝ': ['KeyN', 'KeyJ'], 'ㅞ': ['KeyN', 'KeyP'], 'ㅟ': ['KeyN', 'KeyL'], 'ㅠ': ['KeyB'],
+      'ㅡ': ['KeyM'], 'ㅢ': ['KeyM', 'KeyL'], 'ㅣ': ['KeyL']
+    };
+
+    if (!char) return [];
+    if (codeMap[char]) return codeMap[char];
+
+    const code = char.charCodeAt(0);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      const idx = code - 0xAC00;
+      const choIdx = Math.floor(idx / 588);
+      const jungIdx = Math.floor((idx % 588) / 28);
+      const jongIdx = idx % 28;
+
+      const choList = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+      const jungList = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+      const jongList = ['', 'ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+
+      const result = [];
+      if (choList[choIdx] && codeMap[choList[choIdx]]) result.push(...codeMap[choList[choIdx]]);
+      if (jungList[jungIdx] && codeMap[jungList[jungIdx]]) result.push(...codeMap[jungList[jungIdx]]);
+      if (jongIdx > 0 && jongList[jongIdx] && codeMap[jongList[jongIdx]]) result.push(...codeMap[jongList[jongIdx]]);
+      return result;
+    }
+
+    return [];
+  }
+
+  highlightGuideKey() {
+    let targetText = '';
+    if (this.currentMode === 'short' && this.shortList[this.shortIndex]) {
+      targetText = this.shortList[this.shortIndex];
+    } else if (this.currentMode === 'long' && this.longArticle && this.longArticle.lines[this.longLineIndex]) {
+      targetText = this.longArticle.lines[this.longLineIndex];
+    }
+
+    const currentInput = this.typingInput ? this.typingInput.value : '';
+    const nextChar = targetText[currentInput.length] || '';
+
+    const targetCodes = this.getJamoKeyCodes(nextChar);
+
+    const keys = this.virtualKeyboard.querySelectorAll('.key');
+    keys.forEach(k => {
+      const dataCode = k.dataset.code || '';
+      const isGuide = targetCodes.includes(dataCode);
+      k.classList.toggle('active-guide', isGuide);
     });
   }
 
