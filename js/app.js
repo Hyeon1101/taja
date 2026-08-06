@@ -398,7 +398,8 @@ class HancomTajaApp {
     const keys = this.virtualKeyboard.querySelectorAll('.key');
     keys.forEach(k => {
       const dataKey = (k.dataset.key || '').toLowerCase();
-      if (dataKey === lowerKey || (lowerKey === ' ' && dataKey === ' ')) {
+      const dataKr = (k.dataset.kr || '').toLowerCase();
+      if (dataKey === lowerKey || dataKr === lowerKey || (lowerKey === ' ' && dataKey === ' ')) {
         k.classList.toggle('pressed', isPressed);
       }
     });
