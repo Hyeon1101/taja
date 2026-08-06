@@ -1,9 +1,9 @@
 # PowerShell GitHub Repository Creation & Deployment Script
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
-Write-Host "==========================================" -ForegroundColor Gold
-Write-Host "🚀 Hancom Taja Game - GitHub Deployer" -ForegroundColor Gold
-Write-Host "==========================================" -ForegroundColor Gold
+Write-Host "==========================================" -ForegroundColor Yellow
+Write-Host "🚀 Hancom Taja Game - GitHub Deployer" -ForegroundColor Yellow
+Write-Host "==========================================" -ForegroundColor Yellow
 
 # Change directory
 Set-Location -Path "c:\Users\FEB2726\Downloads\type"
@@ -40,4 +40,4 @@ Write-Host "2. Run the following commands in your terminal:" -ForegroundColor Wh
 Write-Host "   git remote add origin git@github.com:<YOUR_USERNAME>/hancom-taja.git" -ForegroundColor Cyan
 Write-Host "   git push -u origin main" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "🎉 Once pushed, GitHub Actions (.github/workflows/deploy.yml) will automatically publish your game live to GitHub Pages!" -ForegroundColor Gold
+Write-Host "🎉 Once pushed, GitHub Actions (.github/workflows/deploy.yml) will automatically publish your game live to GitHub Pages!" -ForegroundColor Yellow
