@@ -115,7 +115,7 @@ class HancomTajaApp {
     });
 
     this.btnBack.addEventListener('click', () => {
-      this.switchMode('short');
+      this.showLandingScreen();
     });
 
     // Typing Input Events for Short/Long Practice
@@ -125,6 +125,16 @@ class HancomTajaApp {
       soundEngine.playKeyPress();
       if (e.key === 'Enter') {
         this.handleLineSubmit();
+      } else if (e.key === ' ') {
+        let targetText = '';
+        if (this.currentMode === 'short') targetText = this.shortList[this.shortIndex] || '';
+        else if (this.currentMode === 'long') targetText = this.longArticle ? this.longArticle.lines[this.longLineIndex] || '' : '';
+        
+        const currentVal = this.typingInput.value;
+        if (currentVal.length >= targetText.length || currentVal.trim() === targetText.trim()) {
+          e.preventDefault();
+          this.handleLineSubmit();
+        }
       }
     });
 
@@ -148,6 +158,16 @@ class HancomTajaApp {
   }
 
   // --- LANDING SCREEN LOGIC ---
+  showLandingScreen() {
+    this.stopTimer();
+    this.stopWordGameLoop();
+    this.mainApp.classList.add('hidden');
+    if (this.landingScreen) {
+      this.landingScreen.style.display = 'flex';
+      this.landingScreen.classList.remove('fade-out');
+    }
+  }
+
   hideLandingScreen(mode) {
     if (this.landingScreen) {
       // Play a positive sound when starting
@@ -332,6 +352,15 @@ class HancomTajaApp {
     }
 
     this.updateTargetDisplay(targetText, currentInput);
+
+    // Auto-advance when exact match completed
+    if (targetText && currentInput === targetText) {
+      setTimeout(() => {
+        if (this.typingInput.value === targetText) {
+          this.handleLineSubmit();
+        }
+      }, 120);
+    }
   }
 
   updateTargetDisplay(targetText, currentInput) {
