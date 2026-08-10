@@ -145,7 +145,8 @@ class HancomTajaApp {
     // Word Game Input Event
     this.gameInput.addEventListener('keydown', (e) => {
       soundEngine.playKeyPress();
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
         this.handleGameWordSubmit();
       }
     });
