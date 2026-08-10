@@ -223,7 +223,7 @@ class HancomTajaApp {
       this.gameStage.classList.add('hidden');
 
       if (mode === 'short') {
-        this.populateCategorySelect(['모든 범주', '속담 및 명언']);
+        this.populateCategorySelect(['속담 및 명언']);
         this.startShortPractice();
       } else { // long
         const articleTitles = TAJA_TEXTS.long.map(a => a.title);
