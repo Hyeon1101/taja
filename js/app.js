@@ -352,7 +352,7 @@ class HancomTajaApp {
       targetText = this.longArticle.lines[this.longLineIndex];
     }
 
-    this.updateTargetDisplay(targetText, currentInput);
+    this.updateTargetDisplay(targetText, currentInput, e);
 
     // Auto-advance when exact match completed
     if (targetText && currentInput === targetText && !this.isSubmittingLine) {
@@ -364,7 +364,7 @@ class HancomTajaApp {
     }
   }
 
-  updateTargetDisplay(targetText, currentInput) {
+  updateTargetDisplay(targetText, currentInput, e) {
     const displayEl = this.currentMode === 'short' ? 
       document.getElementById('target-line') : 
       document.getElementById(`line-disp-${this.longLineIndex}`);
@@ -494,6 +494,8 @@ class HancomTajaApp {
 
   getJamoKeyCodes(char) {
     const codeMap = {
+      ' ': ['Space'], '.': ['Period'], ',': ['Comma'], '?': ['Slash', 'ShiftLeft'],
+      '!': ['Digit1', 'ShiftLeft'], '~': ['Backquote', 'ShiftLeft'], '-': ['Minus'],
       'ㄱ': ['KeyR'], 'ㄲ': ['KeyR'], 'ㄴ': ['KeyS'], 'ㄷ': ['KeyE'], 'ㄸ': ['KeyE'],
       'ㄹ': ['KeyF'], 'ㅁ': ['KeyA'], 'ㅂ': ['KeyQ'], 'ㅃ': ['KeyQ'], 'ㅅ': ['KeyT'],
       'ㅆ': ['KeyT'], 'ㅇ': ['KeyD'], 'ㅈ': ['KeyW'], 'ㅉ': ['KeyW'], 'ㅊ': ['KeyC'],
@@ -566,18 +568,22 @@ class HancomTajaApp {
 
     this.startTimer();
 
-    // Word spawn loop
-    this.spawnTimer = setInterval(() => this.spawnWord(), 2000);
-    
-    // Animation loop (updates word positions)
-    this.gameLoopInterval = setInterval(() => this.updateWordPositions(), 50);
+    this.spawnTimer = setInterval(() => this.spawnWord(), 2200);
+
+    const animate = () => {
+      if (!this.isGameOver && this.currentMode === 'game') {
+        this.updateWordPositions();
+        this.animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+    this.animationFrameId = requestAnimationFrame(animate);
   }
 
   stopWordGameLoop() {
     if (this.spawnTimer) clearInterval(this.spawnTimer);
-    if (this.gameLoopInterval) clearInterval(this.gameLoopInterval);
+    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
     this.spawnTimer = null;
-    this.gameLoopInterval = null;
+    this.animationFrameId = null;
   }
 
   spawnWord() {
@@ -613,14 +619,14 @@ class HancomTajaApp {
     el.className = 'falling-word';
     el.textContent = randomWord;
     el.style.left = `${posX}px`;
-    el.style.top = `0px`;
+    el.style.transform = `translateY(0px)`;
 
     const wordObj = {
       word: randomWord,
       el: el,
       x: posX,
       y: 0,
-      speed: 1.5 + (this.gameLevel * 0.5)
+      speed: 1.2 + (this.gameLevel * 0.4)
     };
 
     this.fallingArea.appendChild(el);
@@ -634,7 +640,7 @@ class HancomTajaApp {
     for (let i = this.fallingWords.length - 1; i >= 0; i--) {
       const w = this.fallingWords[i];
       w.y += w.speed;
-      w.el.style.top = `${w.y}px`;
+      w.el.style.transform = `translateY(${w.y}px)`;
 
       // Word reached bottom
       if (w.y >= maxHeight) {
@@ -712,6 +718,10 @@ class HancomTajaApp {
     this.isGameOver = true;
     this.stopWordGameLoop();
     this.stopTimer();
+
+    // Clean up falling words DOM elements
+    if (this.fallingArea) this.fallingArea.innerHTML = '';
+    this.fallingWords = [];
 
     this.modalTitle.textContent = '게임 오버! 🎮';
     this.resCPM.textContent = `${this.gameScore} 점`;

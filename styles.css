@@ -665,13 +665,13 @@ body {
 .primary-action-btn {
   padding: 14px 28px;
   background-color: var(--primary-gold);
-  color: #FFF;
-  border: none;
-  border-radius: 16px;
-  font-family: var(--font-kr);
-  font-size: 1.1rem;
-  font-weight: 800;
-color: #A0AEC0;
+font-weight: 700;
+  color: #1A202C;
+}
+
+.key .en-char {
+  font-size: 0.65rem;
+  color: #A0AEC0;
 }
 
 .key.pressed {
@@ -1197,4 +1197,107 @@ color: #A0AEC0;
 
 .feature-item i {
   color: #22C55E;
+}
+
+/* =========================================
+   Responsive Design & Mobile Compatibility
+   ========================================= */
+
+@media (max-width: 900px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .app-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--border-color);
+    padding: 16px;
+  }
+
+  .stats-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 8px;
+  }
+
+  .stat-item {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .keyboard-section {
+    overflow-x: auto;
+    padding: 8px 0;
+  }
+
+  .keyboard-container {
+    transform: scale(0.85);
+    transform-origin: center top;
+  }
+
+  .landing-hero-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .mode-cards-container {
+    grid-template-columns: 1fr;
+  }
+
+  .keyboard-container {
+    transform: scale(0.68);
+    transform-origin: center top;
+  }
+
+  .user-input-box {
+    font-size: 1.1rem;
+    padding: 12px 16px;
+  }
+
+  .tab-group {
+    gap: 4px;
+  }
+
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Active Guide Key Animation */
+@keyframes guidePulse {
+  0% { transform: scale(1); box-shadow: 0 0 4px rgba(217, 138, 29, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(217, 138, 29, 0.8); }
+  100% { transform: scale(1); box-shadow: 0 0 4px rgba(217, 138, 29, 0.4); }
+}
+
+.key.active-guide {
+  animation: guidePulse 1.2s infinite ease-in-out;
+  background-color: #FFF3C4 !important;
+  border-color: var(--primary-gold) !important;
+}
+
+/* Falling word arcade styling upgrade */
+.falling-word {
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+  border: 2px solid #64748B;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4), 0 0 10px rgba(99, 102, 241, 0.2);
+  backdrop-filter: blur(8px);
+  color: #F8FAFC;
+  font-weight: 800;
+  border-radius: 20px;
+  padding: 8px 18px;
 }

@@ -153,7 +153,7 @@
 
       <footer class="sidebar-footer">
         출처: 애국가, 윤동주, 이육사, 세종대왕<br>
-        Hyeon 타자 연습 Web WebApp
+        Hyeon 타자 연습 Web App
       </footer>
     </aside>
 
@@ -175,11 +175,11 @@
         </div>
 
         <div class="nav-controls">
-          <select id="category-select" class="category-select">
+          <select id="category-select" class="category-select" aria-label="연습 카테고리 선택">
             <!-- Populated via JS based on mode -->
           </select>
 
-          <button id="btn-sound" class="sound-toggle-btn" title="음소거 설정">
+          <button id="btn-sound" class="sound-toggle-btn" title="음소거 설정" aria-label="음소거 설정">
             <i class="fa-solid fa-volume-high"></i>
           </button>
         </div>
@@ -190,7 +190,7 @@
         
         <div class="typing-header-card" id="practice-title">
           <span>애국가 1절</span>
-          <span class="sentence-progress" id="sentence-progress">1 / 10</span>
+          <span class="sentence-progress" id="sentence-progress" role="status">1 / 10</span>
         </div>
 
         <div class="typing-board">
@@ -198,12 +198,12 @@
             <!-- Dynamic lines generated here -->
           </div>
 
-          <input type="text" id="typing-input" class="user-input-box" placeholder="여기에 따라 입력하세요..." autocomplete="off" spellcheck="false">
+          <input type="text" id="typing-input" class="user-input-box" placeholder="여기에 따라 입력하세요..." autocomplete="off" spellcheck="false" aria-label="타자 연습 입력창">
         </div>
 
         <!-- Virtual Keyboard -->
         <section class="keyboard-section">
-          <div class="keyboard-container" id="virtual-keyboard">
+          <div class="keyboard-container" id="virtual-keyboard" aria-hidden="true">
             <!-- Row 1 -->
             <div class="kb-row">
               <div class="key" data-key="`" data-code="Backquote"><span class="kr-char">~</span><span class="en-char">`</span></div>
@@ -306,7 +306,7 @@
           </div>
 
           <div class="game-input-container">
-            <input type="text" id="game-input" class="game-input-box" placeholder="떨어지는 단어를 입력하고 Enter 또는 Space!" autocomplete="off">
+            <input type="text" id="game-input" class="game-input-box" placeholder="떨어지는 단어를 입력하고 Enter 또는 Space!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
           </div>
         </div>
       </div>
