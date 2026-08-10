@@ -418,8 +418,8 @@ class HancomTajaApp {
 
       if (this.shortIndex < this.shortList.length - 1) {
         this.shortIndex++;
-        this.renderShortSentence();
         this.typingInput.value = '';
+        this.renderShortSentence();
       } else {
         this.finishPractice();
       }
@@ -429,8 +429,8 @@ class HancomTajaApp {
 
       if (this.longLineIndex < this.longArticle.lines.length - 1) {
         this.longLineIndex++;
-        this.renderLongLines();
         this.typingInput.value = '';
+        this.renderLongLines();
       } else {
         this.finishPractice();
       }
