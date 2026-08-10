@@ -409,13 +409,7 @@ class HancomTajaApp {
     this.typingInput.value = '';
     const currentTarget = (this.currentMode === 'short' ? this.shortList[this.shortIndex] : (this.longArticle ? this.longArticle.lines[this.longLineIndex] : '')) || '';
     this.updateTargetDisplay(currentTarget, '');
-    this.typingInput.blur();
-    setTimeout(() => {
-      if (this.typingInput) {
-        this.typingInput.value = '';
-        this.typingInput.focus();
-      }
-    }, 20);
+    this.typingInput.focus();
   }
 
   handleLineSubmit() {
@@ -446,9 +440,7 @@ class HancomTajaApp {
       }
     }
 
-    setTimeout(() => {
-      this.isSubmittingLine = false;
-    }, 100);
+    this.isSubmittingLine = false;
   }
 
   finishPractice() {
