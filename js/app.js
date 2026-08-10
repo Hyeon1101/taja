@@ -583,10 +583,29 @@ class HancomTajaApp {
     if (this.isGameOver) return;
 
     const diff = this.categorySelect.value === '어려움' ? 'hard' : (this.categorySelect.value === '보통' ? 'medium' : 'easy');
-    const wordList = TAJA_TEXTS.words[diff];
-    const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+    const wordList = TAJA_TEXTS.words[diff] || TAJA_TEXTS.words.easy;
 
-    const areaWidth = this.fallingArea.clientWidth - 120;
+    if (!this.recentWords) this.recentWords = [];
+
+    // Filter out words currently falling on screen OR spawned recently
+    const activeWords = this.fallingWords.map(w => w.word);
+    let candidates = wordList.filter(w => !activeWords.includes(w) && !this.recentWords.includes(w));
+
+    if (candidates.length === 0) {
+      candidates = wordList.filter(w => !activeWords.includes(w));
+    }
+    if (candidates.length === 0) {
+      candidates = wordList;
+    }
+
+    const randomWord = candidates[Math.floor(Math.random() * candidates.length)];
+
+    this.recentWords.push(randomWord);
+    if (this.recentWords.length > 25) {
+      this.recentWords.shift();
+    }
+
+    const areaWidth = Math.max(200, this.fallingArea.clientWidth - 120);
     const posX = Math.floor(Math.random() * areaWidth) + 20;
 
     const el = document.createElement('div');
