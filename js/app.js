@@ -355,7 +355,11 @@ class HancomTajaApp {
 
     // Auto-advance when exact match completed
     if (targetText && currentInput === targetText && !this.isSubmittingLine) {
-      this.handleLineSubmit();
+      setTimeout(() => {
+        if (this.typingInput && this.typingInput.value === targetText) {
+          this.handleLineSubmit();
+        }
+      }, 10);
     }
   }
 
@@ -406,10 +410,11 @@ class HancomTajaApp {
 
   clearTypingInput() {
     if (!this.typingInput) return;
+    this.typingInput.blur();
     this.typingInput.value = '';
+    this.typingInput.focus();
     const currentTarget = (this.currentMode === 'short' ? this.shortList[this.shortIndex] : (this.longArticle ? this.longArticle.lines[this.longLineIndex] : '')) || '';
     this.updateTargetDisplay(currentTarget, '');
-    this.typingInput.focus();
   }
 
   handleLineSubmit() {
