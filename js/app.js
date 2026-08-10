@@ -131,7 +131,7 @@ class HancomTajaApp {
         else if (this.currentMode === 'long') targetText = this.longArticle ? this.longArticle.lines[this.longLineIndex] || '' : '';
         
         const currentVal = this.typingInput.value;
-        if (currentVal.length >= targetText.length || currentVal.trim() === targetText.trim()) {
+        if (currentVal.trim() === targetText.trim() && currentVal.length > 0) {
           e.preventDefault();
           this.handleLineSubmit();
         }
@@ -354,12 +354,8 @@ class HancomTajaApp {
     this.updateTargetDisplay(targetText, currentInput);
 
     // Auto-advance when exact match completed
-    if (targetText && currentInput === targetText) {
-      setTimeout(() => {
-        if (this.typingInput.value === targetText) {
-          this.handleLineSubmit();
-        }
-      }, 120);
+    if (targetText && currentInput === targetText && !this.isSubmittingLine) {
+      this.handleLineSubmit();
     }
   }
 
@@ -408,33 +404,51 @@ class HancomTajaApp {
     this.highlightGuideKey();
   }
 
+  clearTypingInput() {
+    if (!this.typingInput) return;
+    this.typingInput.value = '';
+    const currentTarget = (this.currentMode === 'short' ? this.shortList[this.shortIndex] : (this.longArticle ? this.longArticle.lines[this.longLineIndex] : '')) || '';
+    this.updateTargetDisplay(currentTarget, '');
+    this.typingInput.blur();
+    setTimeout(() => {
+      if (this.typingInput) {
+        this.typingInput.value = '';
+        this.typingInput.focus();
+      }
+    }, 20);
+  }
+
   handleLineSubmit() {
-    const currentInput = this.typingInput.value;
-    let targetText = '';
+    if (this.isSubmittingLine) return;
+    this.isSubmittingLine = true;
 
     if (this.currentMode === 'short') {
-      targetText = this.shortList[this.shortIndex];
       soundEngine.playCompleteLine();
 
       if (this.shortIndex < this.shortList.length - 1) {
         this.shortIndex++;
-        this.typingInput.value = '';
+        this.clearTypingInput();
         this.renderShortSentence();
       } else {
+        this.clearTypingInput();
         this.finishPractice();
       }
     } else if (this.currentMode === 'long') {
-      targetText = this.longArticle.lines[this.longLineIndex];
       soundEngine.playCompleteLine();
 
       if (this.longLineIndex < this.longArticle.lines.length - 1) {
         this.longLineIndex++;
-        this.typingInput.value = '';
+        this.clearTypingInput();
         this.renderLongLines();
       } else {
+        this.clearTypingInput();
         this.finishPractice();
       }
     }
+
+    setTimeout(() => {
+      this.isSubmittingLine = false;
+    }, 100);
   }
 
   finishPractice() {
