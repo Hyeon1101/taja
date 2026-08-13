@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hyeon 타자 — 기술 구조 · 플로 차트</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f8f3e6;
+      --ink: #2d3748;
+      --gold: #d98a1d;
+      --gold-s: #fbecc7;
+      --blue: #2563eb;
+      --purple: #7c3aed;
+      --ok: #28a745;
+      --bad: #dc3545;
+      --line: #e2d5b7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "IBM Plex Sans KR", "Malgun Gothic", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .hero {
+      position: relative;
+      min-height: 220px;
+      background: url("assets/banner.jpg") center/cover;
+      color: #fff;
+    }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(20,16,12,.45), rgba(20,16,12,.78));
+    }
+    .hero-inner { position: relative; z-index: 1; padding: 36px 40px 28px; }
+    .hero-inner p { opacity: .9; font-size: .95rem; }
+    .hero-inner h1 { font-size: 2rem; font-weight: 700; margin: 8px 0 6px; letter-spacing: -.02em; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 64px; }
+    h2 { font-size: 1.35rem; margin: 8px 0 14px; }
+    h3 { font-size: 1.05rem; margin-bottom: 10px; }
+    .note { color: #718096; font-size: .88rem; margin-bottom: 16px; }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.04);
+    }
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .mode {
+      background: #fffaf0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .mode img { width: 100%; height: 120px; object-fit: cover; }
+    .mode div { padding: 12px 14px; }
+    .mode strong { display: block; margin-bottom: 4px; }
+    .mode span { font-size: .86rem; color: #4a5568; }
+
+    .arch {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .arch-col { display: flex; flex-direction: column; gap: 8px; }
+    .box {
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--line);
+      background: #fffdf7;
+      text-align: center;
+      font-weight: 600;
+      font-size: .92rem;
+    }
+    .box small { display: block; font-weight: 400; color: #718096; font-size: .75rem; }
+    .box.gold { background: var(--gold); color: #fff; border-color: var(--gold); }
+    .box.gold small { color: #fff3d6; }
+    .box.ink { background: #2c2825; color: #f5e5c9; border-color: #2c2825; }
+    .box.blue { background: #eff6ff; border-color: #93c5fd; }
+    .box.orange { background: #fff7ed; border-color: #fdba74; }
+    .box.purple { background: #f5f3ff; border-color: #c4b5fd; }
+    .box.green { background: #ecfdf5; border-color: #6ee7b7; }
+    .mods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .node {
+      min-width: 220px;
+      max-width: 340px;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      font-weight: 600;
+      font-size: .9rem;
+    }
+    .node.start { background: var(--gold); color: #fff; border-color: var(--gold); }
+    .node.end { background: #2c2825; color: #fff; border-color: #2c2825; }
+    .node.dec {
+      transform: none;
+      background: #fff7ed;
+      border-color: var(--gold);
+      border-radius: 4px;
+    }
+    .arrow {
+      width: 2px; height: 22px;
+      background: var(--gold);
+      position: relative;
+    }
+    .arrow::after {
+      content: "";
+      position: absolute; left: -4px; bottom: -1px;
+      border: 5px solid transparent;
+      border-top-color: var(--gold);
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .lane {
+      background: #fffaf0;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 12px 8px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .lane-title { font-size: .82rem; color: #718096; margin-bottom: 8px; font-weight: 700; }
+    .join-note { margin-top: 12px; font-size: .85rem; color: #4a5568; }
+
+    .mini { display: flex; flex-direction: column; align-items: center; }
+    .mini .node { min-width: 150px; max-width: 180px; font-size: .8rem; padding: 8px 10px; }
+    .mini .arrow { height: 16px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px 10px; text-align: left; }
+    th { background: #fff7ed; font-weight: 700; }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: .84em; background: #f1efe6; padding: 1px 5px; border-radius: 4px; }
+
+    .formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .formula {
+      background: #2c2825;
+      color: #f5e5c9;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .formula b { color: #f6c15b; }
+
+    @media (max-width: 800px) {
+      .modes, .split, .formulas, .mods, .arch { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p>Hyeon 타자 연습 · https://hyeon-taja-game.netlify.app</p>
+      <h1>기술 구조 차트 · 플로 차트</h1>
+      <p>원본 코드(index.html, js/app.js, js/texts.js, js/sound.js)를 기준으로 그렸습니다. 그림은 장식이고, 글자는 모두 코드로 넣었습니다.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card" id="chart-overview">
+      <h2>1. 서비스 한눈에</h2>
+      <p class="note">로그인 없이 브라우저에서 바로 돌아가는 한글 타자 연습 웹앱입니다. 한컴타자 형식의 단문 · 장문 · 낱말 게임 세 가지 모드가 있습니다.</p>
+      <div class="modes">
+        <article class="mode">
+          <img src="assets/icon-short.jpg" alt="">
+          <div>
+            <strong>단문 연습</strong>
+            <span>속담·명언 10문장. 한 줄씩 따라 칩니다.</span>
+          </div>
+        </article>
+        <article class="mode">
+          <img src="assets/icon-long.jpg" alt="">
+          <div>
+            <strong>장문 연습</strong>
+            <span>애국가, 별 헤는 밤, 청포도, 훈민정음. 네 줄씩 보여 줍니다.</span>
+          </div>
+        </article>
+        <article class="mode">
+          <img src="assets/icon-game.jpg" alt="">
+          <div>
+            <strong>낱말 게임</strong>
+            <span>떨어지는 단어를 치고 없앱니다. 목숨 5, 500점마다 레벨 상승.</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="chart-arch">
+      <h2>2. 기술 구조 차트</h2>
+      <p class="note">빌드 도구 없이 HTML · CSS · JavaScript만 씁니다. 배포는 정적 호스팅(Netlify)입니다.</p>
+      <div class="arch">
+        <div class="arch-col">
+          <div class="box ink">사용자 브라우저<small>Chrome, Edge, Safari</small></div>
+          <div class="box gold">index.html<small>화면 뼈대 · 시작 · 본 화면</small></div>
+        </div>
+        <div class="arch-col">
+          <div class="mods">
+            <div class="box orange">styles.css<small>색 · 배치 · 반응형</small></div>
+            <div class="box blue">js/app.js<small>HancomTajaApp 총괄</small></div>
+            <div class="box purple">js/sound.js<small>SoundEngine 효과음</small></div>
+          </div>
+          <div class="mods">
+            <div class="box green">js/texts.js<small>TAJA_TEXTS 문장·단어</small></div>
+            <div class="box">assets/<small>cover_short · cover_long · cover_game</small></div>
+            <div class="box">Font Awesome<small>아이콘 CDN</small></div>
+          </div>
+        </div>
+      </div>
+      <table style="margin-top:16px">
+        <thead>
+          <tr><th>모듈</th><th>역할</th><th>주요 동작</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>HancomTajaApp</code></td><td>화면 전환과 연습·게임 진행</td><td>모드 선택, 입력 판정, 통계, 가상 자판, 낱말 낙하</td></tr>
+          <tr><td><code>TAJA_TEXTS</code></td><td>연습 데이터</td><td>단문 10개, 장문 4편, 낱말 쉬움·보통·어려움</td></tr>
+          <tr><td><code>SoundEngine</code></td><td>Web Audio 효과음</td><td>키 클릭, 오타, 줄 완료, 단어 제거</td></tr>
+          <tr><td>가상 자판</td><td>두벌식 안내</td><td>다음 글자의 자모를 <code>e.code</code>로 찾아 노란 키 표시</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="chart-user-flow">
+      <h2>3. 전체 사용자 플로 차트</h2>
+      <p class="note">시작 화면에서 모드를 고른 뒤에만 본 화면이 열립니다. 페이드 아웃은 0.6초입니다.</p>
+      <div class="flow">
+        <div class="node start">시작 화면</div>
+        <div class="arrow"></div>
+        <div class="node">모드 카드 클릭<br><small style="font-weight:400">단문 · 장문 · 낱말 게임</small></div>
+        <div class="arrow"></div>
+        <div class="node">본 화면 열림 · 통계 초기화</div>
+        <div class="arrow"></div>
+        <div class="split">
+          <div class="lane">
+            <div class="lane-title">단문</div>
+            <div class="mini">
+              <div class="node">속담 10문장</div>
+              <div class="arrow"></div>
+              <div class="node">한 줄 입력</div>
+              <div class="arrow"></div>
+              <div class="node">Enter 또는 완전 일치</div>
+            </div>
+          </div>
+          <div class="lane">
+            <div class="lane-title">장문</div>
+            <div class="mini">
+              <div class="node">글감 선택</div>
+              <div class="arrow"></div>
+              <div class="node">네 줄 표시</div>
+              <div class="arrow"></div>
+              <div class="node">줄 넘김 후 스크롤</div>
+            </div>
+          </div>
+          <div class="lane">
+            <div class="lane-title">낱말 게임</div>
+            <div class="mini">
+              <div class="node">단어 낙하</div>
+              <div class="arrow"></div>
+              <div class="node">입력 후 Enter / Space</div>
+              <div class="arrow"></div>
+              <div class="node">점수 · 목숨 · 레벨</div>
+            </div>
+          </div>
+        </div>
+        <div class="arrow"></div>
+        <div class="node">결과 모달<br><small style="font-weight:400">평균 타수 · 최고 타수 · 정확도 · 시간</small></div>
+        <div class="arrow"></div>
+        <div class="node">다시 하기 → 같은 모드 재시작</div>
+        <div class="arrow"></div>
+        <div class="node end">메인으로 돌아가기</div>
+      </div>
+    </section>
+
+    <section class="card" id="chart-type-flow">
+      <h2>4. 단문 · 장문 입력 플로</h2>
+      <p class="note">첫 글자를 치는 순간 타이머가 켜집니다. 글자마다 초록(맞음) · 빨강(틀림) · 노랑(현재)으로 칠합니다.</p>
+      <div class="flow">
+        <div class="node start">목표 문장 표시</div>
+        <div class="arrow"></div>
+        <div class="node">input 이벤트</div>
+        <div class="arrow"></div>
+        <div class="node dec">타이머가 꺼져 있고<br>입력이 있는가?</div>
+        <div class="arrow"></div>
+        <div class="node">타이머 시작 · 글자 비교 · 자판 안내</div>
+        <div class="arrow"></div>
+        <div class="node dec">입력 === 목표 문장?</div>
+        <div class="arrow"></div>
+        <div class="node">0.01초 뒤 한 줄 제출</div>
+        <div class="arrow"></div>
+        <div class="node dec">마지막 줄인가?</div>
+        <div class="arrow"></div>
+        <div class="node end">연습 완료 모달 / 아니면 다음 줄</div>
+      </div>
+      <p class="join-note">Enter는 항상 제출을 시도합니다. 스페이스는 앞뒤 공백을 뺀 값이 목표와 같을 때만 다음 줄로 갑니다.</p>
+    </section>
+
+    <section class="card" id="chart-game-flow">
+      <h2>5. 낱말 게임 플로</h2>
+      <p class="note">2.2초마다 단어를 만들고, 화면은 <code>requestAnimationFrame</code>으로 움직입니다. 난이도는 쉬움 · 보통 · 어려움입니다.</p>
+      <div class="split">
+        <div class="lane">
+          <div class="lane-title">생성</div>
+          <div class="mini">
+            <div class="node">2.2초마다 생성</div>
+            <div class="arrow"></div>
+            <div class="node">화면·최근 25개와<br>겹치지 않게 고름</div>
+            <div class="arrow"></div>
+            <div class="node">무작위 X 위치</div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-title">맞춤</div>
+          <div class="mini">
+            <div class="node">Enter 또는 Space</div>
+            <div class="arrow"></div>
+            <div class="node dec">단어가 일치?</div>
+            <div class="arrow"></div>
+            <div class="node">+100점 · 단어 제거</div>
+            <div class="arrow"></div>
+            <div class="node">500점마다 레벨 +1</div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-title">놓침</div>
+          <div class="mini">
+            <div class="node">바닥까지 낙하</div>
+            <div class="arrow"></div>
+            <div class="node">목숨 −1 · 오타 +1</div>
+            <div class="arrow"></div>
+            <div class="node dec">목숨이 0인가?</div>
+            <div class="arrow"></div>
+            <div class="node end">게임 오버</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="chart-stats">
+      <h2>6. 진행중 통계</h2>
+      <p class="note">코드의 계산식 그대로입니다. 타이머는 0.5초마다 화면을 고칩니다.</p>
+      <div class="formulas">
+        <div class="formula">타수(타/분) = <b>(맞은 타수 ÷ 경과 초) × 60</b></div>
+        <div class="formula">정확도(%) = <b>맞은 타수 ÷ (전체 타수 + 오타 수) × 100</b></div>
+      </div>
+      <table style="margin-top:14px">
+        <thead><tr><th>항목</th><th>표시</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td>진행 시간</td><td>분:초</td><td>첫 입력 후에만 흐릅니다</td></tr>
+          <tr><td>타수</td><td>타/분</td><td>한글은 글자당 약 2타로 잡습니다</td></tr>
+          <tr><td>정확도</td><td>%</td><td>0 미만 · 100 초과는 잘라 냅니다</td></tr>
+          <tr><td>오타</td><td>횟수</td><td>새로 넣은 글자가 틀릴 때만 더합니다</td></tr>
+          <tr><td>최고 타수</td><td>타/분</td><td>한 판 안에서 가장 높았던 타수</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
