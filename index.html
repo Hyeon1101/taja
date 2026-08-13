@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hyeon 타자 연습 - 온라인 타자 게임</title>
+  <title>Hyeon 타자 연습 - 온라인 타자 연습 &amp; 아케이드 게임</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- Top Banner -->
+  <!-- Top Banner Notice -->
   <header class="top-banner">
-    <i class="fa-solid fa-circle-exclamation"></i>
-    <span>로그인 없이 무료로 모든 타자 연습과 게임을 즐기실 수 있습니다.</span>
+    <div class="banner-pill">
+      <i class="fa-solid fa-sparkles"></i>
+      <span>로그인 없이 100% 무료로 즐기는 심플 스마트 타자 연습</span>
+    </div>
   </header>
 
-  <!-- Premium Vibrant Landing Screen -->
+  <!-- Clean Ultra-White Modern Landing Screen -->
   <div id="landing-screen" class="landing-screen">
-    <!-- Ambient Background Glows -->
-    <div class="glow-orb glow-orange"></div>
-    <div class="glow-orb glow-blue"></div>
+    <!-- Soft Minimal Background Orbs -->
+    <div class="glow-orb glow-soft-blue"></div>
+    <div class="glow-orb glow-soft-purple"></div>
 
     <div class="landing-inner">
       <!-- Top Brand Header -->
@@ -29,66 +34,78 @@
           <span class="logo-text">Hyeon타자<span class="logo-sub">ONLINE</span></span>
         </div>
         <div class="landing-header-right">
-          <span class="online-status-pill"><span class="pulse-dot"></span> 무료 이용 가능</span>
+          <span class="online-status-pill"><span class="pulse-dot"></span> 서비스 정상 작동 중</span>
         </div>
       </header>
 
       <!-- Hero Title Section -->
       <section class="landing-hero">
-        <div class="hero-badge"><i class="fa-solid fa-sparkles"></i> 100% 무료 타자 연습 &amp; 아케이드 게임</div>
-        <h1 class="landing-hero-title">더 빠르고 재미있게,<br><span class="highlight-text">Hyeon 타자</span>를 즐겨보세요!</h1>
-        <p class="landing-hero-subtitle">원하는 모드를 선택하면 로그인 없이 즉시 연습이 시작됩니다.</p>
+        <div class="hero-badge"><i class="fa-solid fa-bolt"></i> 빠르고 정갈한 한글 타자 연습</div>
+        <h1 class="landing-hero-title">나만의 타자 타이핑,<br><span class="highlight-text">Hyeon 타자</span>와 함께하세요</h1>
+        <p class="landing-hero-subtitle">사진 없이 깔끔한 화이트 디자인에서 몰입감 있는 타자 연습을 경험해보세요.</p>
       </section>
 
-      <!-- Mode Cards Grid -->
+      <!-- Mode Cards Grid (No Images, Pure Minimal Icon UI/UX) -->
       <div class="mode-cards-container">
         <!-- Short Practice Card -->
-        <div class="mode-card card-mono magnetic-element" data-launch="short">
-          <div class="card-badge-wrap">
-            <span class="card-badge badge-mono">단문</span>
-          </div>
-          <div class="card-cover-box">
-            <img src="assets/cover_short.jpg" alt="단문 연습" class="card-img">
+        <div class="mode-card card-blue magnetic-element" data-launch="short">
+          <div class="card-top-bar">
+            <div class="card-icon-avatar avatar-blue">
+              <i class="fa-solid fa-bolt-lightning"></i>
+            </div>
+            <span class="card-chip chip-blue">⚡ 순발력 연습</span>
           </div>
           <div class="card-body">
             <h3 class="card-title">단문 연습</h3>
-            <p class="card-desc">속담과 명언을 빠르게 따라 치며 실시간 타수를 측정해보세요.</p>
+            <p class="card-desc">짧고 명확한 속담과 명언을 따라 치며 실시간 타수와 정확도를 정밀 측정합니다.</p>
+            <div class="card-tags">
+              <span class="tag-item">속담 &amp; 명언 10문장</span>
+              <span class="tag-item">실시간 CPM 분석</span>
+            </div>
             <div class="card-btn-wrap">
-              <span class="card-action-btn btn-mono">단문 시작 <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="card-action-btn btn-blue">단문 시작 <i class="fa-solid fa-arrow-right"></i></span>
             </div>
           </div>
         </div>
 
         <!-- Long Practice Card -->
-        <div class="mode-card card-mono magnetic-element" data-launch="long">
-          <div class="card-badge-wrap">
-            <span class="card-badge badge-mono">장문</span>
-          </div>
-          <div class="card-cover-box">
-            <img src="assets/cover_long.jpg" alt="장문 연습" class="card-img">
+        <div class="mode-card card-emerald magnetic-element" data-launch="long">
+          <div class="card-top-bar">
+            <div class="card-icon-avatar avatar-emerald">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <span class="card-chip chip-emerald">📜 집중 독서</span>
           </div>
           <div class="card-body">
             <h3 class="card-title">장문 연습</h3>
-            <p class="card-desc">애국가, 훈민정음, 윤동주 시인의 명작을 긴 글로 정갈하게 타건하세요.</p>
+            <p class="card-desc">애국가, 훈민정음, 윤동주 시인의 대표 명작을 긴 글로 정갈하게 타건하세요.</p>
+            <div class="card-tags">
+              <span class="tag-item">시 &amp; 문학 작품</span>
+              <span class="tag-item">자동 줄넘김 지원</span>
+            </div>
             <div class="card-btn-wrap">
-              <span class="card-action-btn btn-mono">장문 시작 <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="card-action-btn btn-emerald">장문 시작 <i class="fa-solid fa-arrow-right"></i></span>
             </div>
           </div>
         </div>
 
         <!-- Word Game Card -->
-        <div class="mode-card card-mono magnetic-element" data-launch="game">
-          <div class="card-badge-wrap">
-            <span class="card-badge badge-mono">게임</span>
-          </div>
-          <div class="card-cover-box">
-            <img src="assets/cover_game.jpg" alt="낱말 게임" class="card-img">
+        <div class="mode-card card-indigo magnetic-element" data-launch="game">
+          <div class="card-top-bar">
+            <div class="card-icon-avatar avatar-indigo">
+              <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <span class="card-chip chip-indigo">🎮 한글 아케이드</span>
           </div>
           <div class="card-body">
             <h3 class="card-title">낱말 게임</h3>
-            <p class="card-desc">하늘에서 쏟아지는 단어를 파괴하는 스릴 만점 한글 아케이드!</p>
+            <p class="card-desc">하늘에서 떨어지는 단어를 빠르게 파괴하여 점수를 올리는 스릴 만점 디펜스 게임!</p>
+            <div class="card-tags">
+              <span class="tag-item">300+ 풍부한 단어</span>
+              <span class="tag-item">Enter / Space 제출</span>
+            </div>
             <div class="card-btn-wrap">
-              <span class="card-action-btn btn-mono">게임 플레이 <i class="fa-solid fa-gamepad"></i></span>
+              <span class="card-action-btn btn-indigo">게임 플레이 <i class="fa-solid fa-play"></i></span>
             </div>
           </div>
         </div>
@@ -97,8 +114,8 @@
       <!-- Trust Feature Footer -->
       <footer class="landing-footer-features">
         <div class="feature-item"><i class="fa-solid fa-circle-check"></i> 2벌식 표준 한글 자판 매핑</div>
-        <div class="feature-item"><i class="fa-solid fa-chart-line"></i> 실시간 타수 / 정확도 / 오타 분석</div>
-        <div class="feature-item"><i class="fa-solid fa-volume-high"></i> 타격감 넘치는 기계식 키보드 사운드</div>
+        <div class="feature-item"><i class="fa-solid fa-chart-line"></i> 실시간 CPM / 정확도 / 오타 통계</div>
+        <div class="feature-item"><i class="fa-solid fa-volume-high"></i> 타격감 넘치는 키보드 사운드</div>
       </footer>
     </div>
   </div>
@@ -119,7 +136,7 @@
 
         <div class="mascot-box">
           <div class="mascot-avatar">
-            <span class="mascot-ghost">☁️</span>
+            <span class="mascot-ghost">⌨️</span>
           </div>
         </div>
 
@@ -343,10 +360,8 @@
   </div>
 
   <!-- Scripts -->
-  <canvas id="ink-burst" class="ink-burst" aria-hidden="true"></canvas>
   <script src="js/texts.js"></script>
   <script src="js/sound.js"></script>
-  <script src="js/fx.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

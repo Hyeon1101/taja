@@ -379,19 +379,20 @@ class HancomTajaApp {
     for (let i = 0; i < targetText.length; i++) {
       const targetChar = targetText[i];
       const inputChar = currentInput[i];
+      const charToShow = targetChar === ' ' ? '&nbsp;' : this.escapeHtml(targetChar);
 
       if (i < currentInput.length) {
         if (inputChar === targetChar) {
-          html += `<span class="correct">${this.escapeHtml(targetChar)}</span>`;
+          html += `<span class="correct">${charToShow}</span>`;
           correctCount += 2;
         } else {
-          html += `<span class="wrong">${this.escapeHtml(targetChar)}</span>`;
+          html += `<span class="wrong">${charToShow}</span>`;
           currentErrors++;
         }
       } else if (i === currentInput.length) {
-        html += `<span class="current">${this.escapeHtml(targetChar)}</span>`;
+        html += `<span class="current">${charToShow}</span>`;
       } else {
-        html += `<span>${this.escapeHtml(targetChar)}</span>`;
+        html += `<span>${charToShow}</span>`;
       }
     }
 
