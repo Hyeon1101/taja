@@ -145,6 +145,33 @@ class SoundEngine {
     }
   }
 
+  // Torongi Spaceship Laser Shot Sound
+  playLaser() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.audioCtx) return;
+    try {
+      const now = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1400, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.14);
+
+      gain.gain.setValueAtTime(this.volume * 0.45, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.14);
+    } catch (e) {
+      console.warn("Audio play error", e);
+    }
+  }
+
   _tone(freq, when, dur, type, amp) {
     if (!this.audioCtx || !this.bgmMaster) return;
     const osc = this.audioCtx.createOscillator();

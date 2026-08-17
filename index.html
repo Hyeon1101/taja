@@ -89,23 +89,23 @@
           </div>
         </div>
 
-        <!-- Word Game Card -->
+        <!-- Word Game Card (Earth Arcade Torongi Laser Game) -->
         <div class="mode-card card-indigo magnetic-element" data-launch="game">
           <div class="card-top-bar">
             <div class="card-icon-avatar avatar-indigo">
-              <i class="fa-solid fa-meteor"></i>
+              <i class="fa-solid fa-shuttle-space"></i>
             </div>
-            <span class="card-chip chip-indigo">☄️ 우주 디펜스</span>
+            <span class="card-chip chip-indigo">🛸 지구오락실 토롱이</span>
           </div>
           <div class="card-body">
-            <h3 class="card-title">낱말 게임</h3>
-            <p class="card-desc">우주에서 떨어지는 운석 낱말을 정확히 입력하면 운석이 폭발합니다. 지구를 지키세요!</p>
+            <h3 class="card-title">지구오락실 낱말 게임</h3>
+            <p class="card-desc">우주에서 쏟아지는 UFO와 행성을 정확히 입력하면 토롱이가 우주선에서 레이저 광선을 쏴 격파합니다!</p>
             <div class="card-tags">
-              <span class="tag-item">운석 폭발</span>
-              <span class="tag-item">Enter · Space 격추</span>
+              <span class="tag-item">토롱이 광선 발사</span>
+              <span class="tag-item">UFO · 행성 격파</span>
             </div>
             <div class="card-btn-wrap">
-              <span class="card-action-btn btn-indigo">운석 격추 <i class="fa-solid fa-play"></i></span>
+              <span class="card-action-btn btn-indigo">광선 발사 <i class="fa-solid fa-play"></i></span>
             </div>
           </div>
         </div>
@@ -321,7 +321,7 @@
         </section>
       </div>
 
-      <!-- Stage: Word Game (Falling Words Arcade) -->
+      <!-- Stage: Word Game (Earth Arcade Torongi Laser Game) -->
       <div id="word-game-stage" class="view-stage hidden">
         <div class="word-game-stage">
           <div class="wg-bg"></div>
@@ -338,11 +338,18 @@
           </div>
 
           <div class="falling-area" id="falling-area">
-            <!-- Falling words spawned dynamically -->
+            <canvas class="wg-laser-canvas" id="word-laser-canvas"></canvas>
+            <!-- Falling space objects with words spawned dynamically -->
+          </div>
+
+          <div class="wg-player-area" id="word-player-area">
+            <div class="wg-torongi-wrap" id="torongi-wrap">
+              <img class="wg-torongi-ship" id="torongi-ship" src="assets/game/torongi-ship.png" alt="토롱이 우주선">
+            </div>
           </div>
 
           <div class="game-input-container">
-            <input type="text" id="game-input" class="game-input-box" placeholder="운석 낱말을 입력하고 Enter 또는 Space!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
+            <input type="text" id="game-input" class="game-input-box" placeholder="우주선과 행성의 낱말을 치면 토롱이가 광선 발사!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
           </div>
         </div>
       </div>

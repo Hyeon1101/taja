@@ -93,6 +93,10 @@ class HancomTajaApp {
     this.gameLivesEl = document.getElementById('game-lives');
     this.fallingArea = document.getElementById('falling-area');
     this.gameInput = document.getElementById('game-input');
+    this.wordLaserCanvas = document.getElementById('word-laser-canvas');
+    this.torongiWrap = document.getElementById('torongi-wrap');
+    this.torongiShip = document.getElementById('torongi-ship');
+    this.laserCtx = this.wordLaserCanvas ? this.wordLaserCanvas.getContext('2d') : null;
 
     // Cookie Run Typing Runner UI
     this.runnerStage = document.getElementById('runner-game-stage');
@@ -709,14 +713,19 @@ class HancomTajaApp {
     }
 
     const clientW = (this.fallingArea && this.fallingArea.clientWidth > 200) ? this.fallingArea.clientWidth : 650;
-    const areaWidth = Math.max(200, clientW - 150);
+    const areaWidth = Math.max(200, clientW - 120);
     const posX = Math.floor(Math.random() * areaWidth) + 16;
 
-    const skins = ['skin-fire', 'skin-rock', 'skin-ice'];
+    const skins = ['skin-ufo', 'skin-rocket', 'skin-moon', 'skin-planet', 'skin-capsule', 'skin-dpad'];
+    const selectedSkin = skins[Math.floor(Math.random() * skins.length)];
     const el = document.createElement('div');
-    el.className = 'falling-word ' + skins[Math.floor(Math.random() * skins.length)];
-    if (randomWord.length >= 5) el.classList.add('is-long');
-    el.textContent = randomWord;
+    el.className = 'falling-word ' + selectedSkin;
+
+    const badge = document.createElement('span');
+    badge.className = 'word-badge';
+    badge.textContent = randomWord;
+    el.appendChild(badge);
+
     el.style.left = `${posX}px`;
 
     const wordObj = {
@@ -724,9 +733,9 @@ class HancomTajaApp {
       el: el,
       x: posX,
       y: 0,
-      speed: 1.2 + (this.gameLevel * 0.4),
-      rot: (Math.random() * 50 - 25),
-      spin: (Math.random() * 0.55 + 0.12) * (Math.random() < 0.5 ? 1 : -1)
+      speed: 1.1 + (this.gameLevel * 0.35),
+      rot: (Math.random() * 24 - 12),
+      spin: (Math.random() * 0.25 + 0.05) * (Math.random() < 0.5 ? 1 : -1)
     };
     el.style.transform = `translateY(0px) rotate(${wordObj.rot}deg)`;
 
@@ -739,7 +748,7 @@ class HancomTajaApp {
   updateWordPositions() {
     if (this.isGameOver || !this.fallingArea) return;
     const clientH = (this.fallingArea.clientHeight > 100) ? this.fallingArea.clientHeight : 500;
-    const maxHeight = clientH - 108;
+    const maxHeight = clientH - 92;
 
     for (let i = this.fallingWords.length - 1; i >= 0; i--) {
       const w = this.fallingWords[i];
@@ -778,14 +787,23 @@ class HancomTajaApp {
     let matched = false;
     for (let i = 0; i < this.fallingWords.length; i++) {
       if (this.fallingWords[i].word === inputVal) {
-        soundEngine.playExplosion();
         const hit = this.fallingWords[i];
         hit.leaving = true;
         hit.el.style.setProperty('--wy', `${hit.y}px`);
         hit.el.style.setProperty('--rot', `${hit.rot}deg`);
-        hit.el.classList.add('is-pop');
-        this.spawnExplosionSparks(hit.x, hit.y);
-        setTimeout(() => { if (hit.el) hit.el.remove(); }, 450);
+
+        // Torongi fires high-power laser beam!
+        this.fireLaserAtTarget(hit);
+
+        setTimeout(() => {
+          soundEngine.playExplosion();
+          hit.el.classList.add('is-pop');
+          this.spawnComicPop(hit.x, hit.y);
+          this.spawnFloatingScore(hit.x, hit.y, 100);
+          this.spawnExplosionSparks(hit.x, hit.y);
+          setTimeout(() => { if (hit.el) hit.el.remove(); }, 450);
+        }, 60);
+
         this.fallingWords.splice(i, 1);
 
         this.gameScore += 100;
@@ -813,22 +831,121 @@ class HancomTajaApp {
     this.updateStatsDisplay();
   }
 
+  fireLaserAtTarget(hit) {
+    if (!this.wordLaserCanvas || !this.fallingArea) return;
+    const areaRect = this.fallingArea.getBoundingClientRect();
+    this.wordLaserCanvas.width = areaRect.width;
+    this.wordLaserCanvas.height = areaRect.height;
+    if (!this.laserCtx) this.laserCtx = this.wordLaserCanvas.getContext('2d');
+    if (!this.laserCtx) return;
+
+    // Torongi cannon position at bottom center
+    const cannonX = areaRect.width / 2;
+    const cannonY = areaRect.height;
+    const targetX = hit.x + 42;
+    const targetY = hit.y + 42;
+
+    // Torongi Recoil & Shoot animation
+    if (this.torongiWrap) {
+      this.torongiWrap.classList.remove('is-shooting');
+      void this.torongiWrap.offsetWidth;
+      this.torongiWrap.classList.add('is-shooting');
+    }
+    if (this.torongiShip) {
+      this.torongiShip.src = 'assets/game/torongi-shoot.png';
+      setTimeout(() => {
+        if (this.torongiShip) this.torongiShip.src = 'assets/game/torongi-ship.png';
+      }, 240);
+    }
+
+    soundEngine.playLaser();
+
+    // High Voltage Multi-layered Laser Beam
+    let frame = 0;
+    const maxFrames = 10;
+    const drawBeam = () => {
+      if (!this.laserCtx || !this.wordLaserCanvas) return;
+      this.laserCtx.clearRect(0, 0, this.wordLaserCanvas.width, this.wordLaserCanvas.height);
+      if (frame >= maxFrames) return;
+
+      const alpha = 1 - (frame / maxFrames);
+      const ctx = this.laserCtx;
+
+      ctx.save();
+      // Outer Neon Pink Aura
+      ctx.strokeStyle = `rgba(244, 63, 94, ${alpha * 0.8})`;
+      ctx.lineWidth = 16 * alpha;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = '#F43F5E';
+      ctx.shadowBlur = 20;
+      ctx.beginPath();
+      ctx.moveTo(cannonX, cannonY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+
+      // Electric Cyan Middle Beam
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.95})`;
+      ctx.lineWidth = 8 * alpha;
+      ctx.shadowColor = '#38BDF8';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(cannonX, cannonY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+
+      // Core White Hot Ray
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.lineWidth = 4 * alpha;
+      ctx.beginPath();
+      ctx.moveTo(cannonX, cannonY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+      ctx.restore();
+
+      frame++;
+      requestAnimationFrame(drawBeam);
+    };
+    drawBeam();
+  }
+
+  spawnComicPop(x, y) {
+    if (!this.fallingArea) return;
+    const pop = document.createElement('div');
+    pop.className = 'wg-comic-pop';
+    pop.textContent = '💥 뿅!';
+    pop.style.left = `${x + 42}px`;
+    pop.style.top = `${y + 42}px`;
+    this.fallingArea.appendChild(pop);
+    setTimeout(() => { if (pop) pop.remove(); }, 650);
+  }
+
+  spawnFloatingScore(x, y, pts) {
+    if (!this.fallingArea) return;
+    const score = document.createElement('div');
+    score.className = 'wg-score-float';
+    score.textContent = `+${pts}`;
+    score.style.left = `${x + 42}px`;
+    score.style.top = `${y + 15}px`;
+    this.fallingArea.appendChild(score);
+    setTimeout(() => { if (score) score.remove(); }, 700);
+  }
+
   spawnExplosionSparks(x, y) {
     if (!this.fallingArea) return;
-    const colors = ['#F97316', '#FBBF24', '#38BDF8', '#FFFFFF', '#EF4444', '#A855F7'];
-    for (let k = 0; k < 12; k++) {
+    const colors = ['#FDE047', '#F43F5E', '#38BDF8', '#FFFFFF', '#10B981'];
+    for (let k = 0; k < 14; k++) {
       const spark = document.createElement('div');
       spark.className = 'wg-spark';
-      spark.style.left = `${x + 68}px`;
-      spark.style.top = `${y + 68}px`;
-      const angle = (Math.PI * 2 * k) / 12 + (Math.random() * 0.4 - 0.2);
-      const dist = Math.random() * 65 + 40;
+      spark.style.left = `${x + 42}px`;
+      spark.style.top = `${y + 42}px`;
+      const angle = (Math.PI * 2 * k) / 14 + (Math.random() * 0.4 - 0.2);
+      const dist = Math.random() * 70 + 40;
       const tx = Math.cos(angle) * dist;
       const ty = Math.sin(angle) * dist;
       spark.style.setProperty('--tx', `${tx}px`);
       spark.style.setProperty('--ty', `${ty}px`);
       spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      spark.style.boxShadow = `0 0 10px ${spark.style.backgroundColor}`;
+      spark.style.boxShadow = `0 0 12px ${spark.style.backgroundColor}`;
       this.fallingArea.appendChild(spark);
       setTimeout(() => { if (spark) spark.remove(); }, 600);
     }
