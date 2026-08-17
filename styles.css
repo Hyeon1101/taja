@@ -605,9 +605,9 @@ body {
 
 .falling-word {
   position: absolute;
-  width: 132px;
-  height: 132px;
-  padding: 28px 16px 22px;
+  width: 136px;
+  height: 136px;
+  padding: 26px 14px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -617,39 +617,55 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-color: transparent;
-  mix-blend-mode: screen;
-  color: #fff;
-  font-size: 1.05rem;
+  color: #FFFFFF;
+  font-size: 1.12rem;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.2;
   border: none;
   box-shadow: none;
   white-space: normal;
   word-break: keep-all;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.8), 0 0 18px rgba(251,146,60,0.55);
-  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.45));
+  text-shadow: 0 2px 5px rgba(0,0,0,0.95), 0 0 12px rgba(0,0,0,0.9), 0 0 20px rgba(251,146,60,0.65);
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
   pointer-events: none;
-  will-change: transform;
+  will-change: transform, filter;
+  transition: filter 0.15s ease;
 }
 
-.falling-word.skin-fire { background-image: url("assets/game/meteor-fire.png"); }
-.falling-word.skin-rock { background-image: url("assets/game/meteor-rock.png"); }
-.falling-word.skin-ice { background-image: url("assets/game/meteor-ice.png"); mix-blend-mode: screen; }
-.falling-word.is-long { font-size: 0.82rem; width: 148px; height: 148px; }
+.falling-word.skin-fire {
+  background-image: url("assets/game/meteor-fire.png");
+  filter: drop-shadow(0 0 14px rgba(249,115,22,0.75)) drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+}
+
+.falling-word.skin-rock {
+  background-image: url("assets/game/meteor-rock.png");
+  filter: drop-shadow(0 0 14px rgba(168,85,247,0.6)) drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+}
+
+.falling-word.skin-ice {
+  background-image: url("assets/game/meteor-ice.png");
+  filter: drop-shadow(0 0 18px rgba(56,189,248,0.85)) drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+}
+
+.falling-word.is-long {
+  font-size: 0.88rem;
+  width: 152px;
+  height: 152px;
+}
 
 .falling-word.targeted {
   background-image: url("assets/game/meteor-target.png");
-  color: #fff8e1;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 16px rgba(251,191,36,0.9);
-  filter: drop-shadow(0 0 16px rgba(251,191,36,0.95));
+  color: #FFFBEB;
+  text-shadow: 0 0 12px rgba(251,191,36,1), 0 0 24px rgba(245,158,11,0.95), 0 2px 6px rgba(0,0,0,1);
+  filter: drop-shadow(0 0 24px rgba(251,191,36,0.95)) drop-shadow(0 0 36px rgba(239,68,68,0.8));
 }
 
 .falling-word.is-pop {
   background-image: url("assets/game/explosion.png") !important;
-  mix-blend-mode: screen;
-  animation: wgBoom 0.42s ease-out forwards;
-  color: transparent;
-  text-shadow: none;
+  animation: wgBoom 0.45s cubic-bezier(0.12, 0.9, 0.25, 1) forwards;
+  color: transparent !important;
+  text-shadow: none !important;
+  z-index: 10;
 }
 
 .falling-word.is-miss {
@@ -657,9 +673,21 @@ body {
 }
 
 @keyframes wgBoom {
-  0% { transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(0.85); opacity: 1; }
-  40% { transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.55); opacity: 1; }
-  100% { transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.9); opacity: 0; }
+  0% {
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(0.85);
+    opacity: 1;
+    filter: brightness(2.2) drop-shadow(0 0 35px #FFEDD5);
+  }
+  40% {
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.65);
+    opacity: 0.95;
+    filter: brightness(1.6) drop-shadow(0 0 28px #F97316);
+  }
+  100% {
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(2.15);
+    opacity: 0;
+    filter: brightness(0.9);
+  }
 }
 
 @keyframes wgMiss {
@@ -667,15 +695,37 @@ body {
   100% { filter: brightness(2.2) hue-rotate(-20deg); opacity: 0; }
 }
 
+/* Explosion Spark Particles */
+.wg-spark {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9;
+  animation: sparkFly 0.55s cubic-bezier(0.1, 0.85, 0.25, 1) forwards;
+}
+
+@keyframes sparkFly {
+  0% {
+    transform: translate(0, 0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
 .game-input-container {
   padding: 14px 24px 16px;
-  background: rgba(4, 10, 24, 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(4, 10, 24, 0.92);
+  backdrop-filter: blur(12px);
   display: flex;
   justify-content: center;
   z-index: 6;
-  border-top: 2px solid rgba(34, 211, 238, 0.38);
-  box-shadow: 0 -8px 24px rgba(6, 182, 212, 0.12);
+  border-top: 2px solid rgba(34, 211, 238, 0.45);
+  box-shadow: 0 -8px 24px rgba(6, 182, 212, 0.18);
 }
 
 .game-input-box {

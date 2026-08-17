@@ -786,7 +786,8 @@ class HancomTajaApp {
         hit.el.style.setProperty('--wy', `${hit.y}px`);
         hit.el.style.setProperty('--rot', `${hit.rot}deg`);
         hit.el.classList.add('is-pop');
-        setTimeout(() => { if (hit.el) hit.el.remove(); }, 400);
+        this.spawnExplosionSparks(hit.x, hit.y);
+        setTimeout(() => { if (hit.el) hit.el.remove(); }, 450);
         this.fallingWords.splice(i, 1);
 
         this.gameScore += 100;
@@ -812,6 +813,27 @@ class HancomTajaApp {
     this.highlightTargetWords();
     this.updateGameHud();
     this.updateStatsDisplay();
+  }
+
+  spawnExplosionSparks(x, y) {
+    if (!this.fallingArea) return;
+    const colors = ['#F97316', '#FBBF24', '#38BDF8', '#FFFFFF', '#EF4444', '#A855F7'];
+    for (let k = 0; k < 12; k++) {
+      const spark = document.createElement('div');
+      spark.className = 'wg-spark';
+      spark.style.left = `${x + 68}px`;
+      spark.style.top = `${y + 68}px`;
+      const angle = (Math.PI * 2 * k) / 12 + (Math.random() * 0.4 - 0.2);
+      const dist = Math.random() * 65 + 40;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist;
+      spark.style.setProperty('--tx', `${tx}px`);
+      spark.style.setProperty('--ty', `${ty}px`);
+      spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      spark.style.boxShadow = `0 0 10px ${spark.style.backgroundColor}`;
+      this.fallingArea.appendChild(spark);
+      setTimeout(() => { if (spark) spark.remove(); }, 600);
+    }
   }
 
   highlightTargetWords() {
