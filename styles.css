@@ -890,7 +890,7 @@ body {
 .cr-bg {
   position: absolute;
   inset: 0 0 52px 0;
-  background-image: url("assets/runner/bg-fairytale.jpg");
+  background-image: url("assets/runner/bg-forest.jpg");
   background-repeat: repeat-x;
   background-size: auto 100%;
   background-position: 0 0;
@@ -1019,21 +1019,21 @@ body {
   animation: crPop 1.4s ease-out;
 }
 
-.cr-hero-wrap.is-hit {
+.cr-hero-wrap.is-hit .cr-hero {
   animation: crHit 0.45s ease-in-out;
 }
 
-.cr-hero-wrap.is-fallen {
-  transform: translate(6px, 16px) rotate(22deg);
+.cr-hero-wrap.is-fallen .cr-hero {
+  transform: translate(4px, 12px) rotate(14deg);
   transform-origin: 50% 90%;
 }
 
-.cr-hero-wrap.is-getting-up {
+.cr-hero-wrap.is-getting-up .cr-hero {
   animation: crGetUp 0.35s ease-out;
 }
 
 @keyframes crGetUp {
-  0% { transform: translate(6px, 16px) rotate(22deg); }
+  0% { transform: translate(4px, 12px) rotate(14deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
@@ -1050,6 +1050,65 @@ body {
   object-fit: contain;
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35));
   image-rendering: auto;
+  transition: transform 0.25s ease;
+}
+
+/* Gretel Cute Speech Bubble (Floating Upright above character) */
+.gretel-speech-bubble {
+  position: absolute;
+  bottom: 115px;
+  left: -20px;
+  background: #FFFFFF;
+  color: #E11D48;
+  font-family: var(--font-kr);
+  font-size: 0.94rem;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 18px;
+  border: 2.5px solid #F43F5E;
+  box-shadow: 0 8px 20px rgba(244, 63, 94, 0.25), 0 2px 6px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 25;
+  animation: bubblePopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gretel-speech-bubble .bubble-icon {
+  font-size: 1.1rem;
+}
+
+/* Speech bubble bottom pointer / tail */
+.gretel-speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 36px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 9px solid #F43F5E;
+}
+
+.gretel-speech-bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 38px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid #FFFFFF;
+  z-index: 1;
+}
+
+@keyframes bubblePopIn {
+  0% { transform: scale(0.6) translateY(14px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 .cr-float {
