@@ -46,10 +46,10 @@ class HancomTajaApp {
     ];
     this.cookieFrame = 0;
     this.runnerWorlds = [
-      { src: 'assets/runner/bg-forest.jpg', name: '1. 숲속', accent: '#22C55E' },
-      { src: 'assets/runner/bg-candyhouse.jpg', name: '2. 과자집', accent: '#F43F5E' },
-      { src: 'assets/runner/bg-witchkitchen.jpg', name: '3. 마녀의 주방', accent: '#A855F7' },
-      { src: 'assets/runner/bg-escape.jpg', name: '4. 과자집 탈출', accent: '#FDE047' }
+      { src: 'assets/runner/bg-forest.jpg?v=2', name: '1. 숲속', accent: '#22C55E' },
+      { src: 'assets/runner/bg-candyhouse.jpg?v=2', name: '2. 과자집', accent: '#F43F5E' },
+      { src: 'assets/runner/bg-witchkitchen.jpg?v=2', name: '3. 마녀의 주방', accent: '#A855F7' },
+      { src: 'assets/runner/bg-escape.jpg?v=2', name: '4. 과자집 탈출', accent: '#FDE047' }
     ];
     this.runnerStageIndex = 0;
     this.runnerWorldChanging = false;
