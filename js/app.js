@@ -37,21 +37,18 @@ class HancomTajaApp {
     this.runnerObstacles = [];
     this.runnerAnimationId = null;
     this.cookieFrames = [
-      'assets/runner/cookie-run-1.png',
-      'assets/runner/cookie-run-2.png',
-      'assets/runner/cookie-run-3.png',
-      'assets/runner/cookie-run-4.png',
-      'assets/runner/cookie-run-5.png',
-      'assets/runner/cookie-run-6.png'
+      'assets/runner/gretel-run-1.png',
+      'assets/runner/gretel-run-2.png',
+      'assets/runner/gretel-run-3.png',
+      'assets/runner/gretel-run-4.png',
+      'assets/runner/gretel-run-5.png',
+      'assets/runner/gretel-run-6.png'
     ];
     this.cookieFrame = 0;
     this.runnerWorlds = [
-      { src: 'assets/runner/bg-sky.jpg', name: '캔디 왕국', accent: '#fbbf24' },
-      { src: 'assets/runner/bg-choco.jpg', name: '초콜릿 숲', accent: '#b45309' },
-      { src: 'assets/runner/bg-cloud.jpg', name: '솜사탕 하늘', accent: '#f9a8d4' },
-      { src: 'assets/runner/bg-beach.jpg', name: '레몬소다 해변', accent: '#facc15' },
-      { src: 'assets/runner/bg-canyon.jpg', name: '베리 협곡', accent: '#fb7185' },
-      { src: 'assets/runner/bg-aurora.jpg', name: '별사탕 밤하늘', accent: '#a78bfa' }
+      { src: 'assets/runner/bg-fairytale.jpg', name: '과자 나라 숲 (헨젤과 그레텔)', accent: '#f43f5e' },
+      { src: 'assets/runner/bg-fairytale.jpg', name: '달콤한 사탕 성', accent: '#fb7185' },
+      { src: 'assets/runner/bg-fairytale.jpg', name: '마카롱 과자 언덕', accent: '#f59e0b' }
     ];
     this.runnerStageIndex = 0;
     this.runnerWorldChanging = false;
@@ -1188,7 +1185,7 @@ class HancomTajaApp {
       this.updateRunnerHud();
       this.runnerCharWrap.classList.remove('is-dashing', 'is-getting-up', 'is-hit');
       this.runnerCharWrap.classList.add('is-fallen');
-      if (this.runnerChar) this.runnerChar.src = 'assets/runner/cookie-hit.png';
+      if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-hit.png';
       if (this.runnerCrashEffect) {
         this.runnerCrashEffect.textContent = '넘어졌어요! 문장을 고치면 일어납니다';
         this.runnerCrashEffect.classList.remove('hidden');
@@ -1211,26 +1208,30 @@ class HancomTajaApp {
     if (this.runnerJellies.length > 22) return;
 
     const kinds = [
-      'assets/runner/jelly-bear.png',
-      'assets/runner/jelly-star.png',
-      'assets/runner/jelly-heart.png'
+      'assets/runner/snack-lollipop.png',
+      'assets/runner/snack-cookie.png',
+      'assets/runner/snack-candy.png',
+      'assets/runner/snack-donut.png'
     ];
     const worldW = this.runnerWorld.clientWidth > 200 ? this.runnerWorld.clientWidth : 700;
+    const worldH = this.runnerWorld.clientHeight > 100 ? this.runnerWorld.clientHeight : 240;
     const count = 3 + Math.floor(Math.random() * 3);
-    const lane = 28 + Math.random() * 80;
-    const speed = 3.1 + Math.min(2.4, this.runnerCombo * 0.18) + this.runnerStageIndex * 0.28;
+    
+    // Bottom ground lane placement: directly along Gretel's running path
+    const groundLaneY = worldH - 100 + (Math.random() * 12 - 6);
+    const speed = 3.2 + Math.min(2.4, this.runnerCombo * 0.18) + this.runnerStageIndex * 0.28;
 
     for (let i = 0; i < count; i++) {
       const el = document.createElement('img');
       el.className = 'cr-jelly';
       el.src = kinds[Math.floor(Math.random() * kinds.length)];
-      el.alt = '';
-      const x = worldW + 30 + i * 54;
-      const y = lane + (i % 2) * 14;
+      el.alt = '과자';
+      const x = worldW + 30 + i * 56;
+      const y = groundLaneY;
       el.style.left = `${x}px`;
       el.style.top = `${y}px`;
       this.runnerJellyTrack.appendChild(el);
-      this.runnerJellies.push({ el, x, y, speed });
+      this.runnerJellies.push({ el, x, y, speed, eaten: false });
     }
   }
 
@@ -1238,12 +1239,26 @@ class HancomTajaApp {
     if (!this.runnerJellies) return;
     const scroll = this.runnerDashing ? 9.5 : 3.2;
 
+    // Gretel is at left: 8% (roughly x = 60 ~ 110px)
+    const heroX = 85;
+
     for (let i = this.runnerJellies.length - 1; i >= 0; i--) {
       const j = this.runnerJellies[i];
       j.x -= j.speed || scroll;
       if (j.el) {
         j.el.style.left = `${j.x}px`;
         j.el.style.top = `${j.y}px`;
+      }
+
+      // Check if Gretel runs into the sweet snack on the ground
+      if (!j.eaten && !this.runnerFallen && j.x <= heroX + 35 && j.x >= heroX - 25) {
+        j.eaten = true;
+        if (j.el) {
+          j.el.classList.add('is-eaten');
+          setTimeout(() => {
+            if (j.el) j.el.remove();
+          }, 380);
+        }
       }
 
       if (j.x < -70) {

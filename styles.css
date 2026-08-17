@@ -605,9 +605,9 @@ body {
 
 .falling-word {
   position: absolute;
-  width: 136px;
-  height: 136px;
-  padding: 26px 14px 20px;
+  width: 88px;
+  height: 88px;
+  padding: 16px 8px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -618,15 +618,15 @@ body {
   background-position: center;
   background-color: transparent;
   color: #FFFFFF;
-  font-size: 1.12rem;
+  font-size: 0.95rem;
   font-weight: 900;
-  line-height: 1.2;
+  line-height: 1.15;
   border: none;
   box-shadow: none;
   white-space: normal;
   word-break: keep-all;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.95), 0 0 12px rgba(0,0,0,0.9), 0 0 20px rgba(251,146,60,0.65);
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+  text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.9), 0 0 16px rgba(251,146,60,0.65);
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
   pointer-events: none;
   will-change: transform, filter;
   transition: filter 0.15s ease;
@@ -634,30 +634,30 @@ body {
 
 .falling-word.skin-fire {
   background-image: url("assets/game/meteor-fire.png");
-  filter: drop-shadow(0 0 14px rgba(249,115,22,0.75)) drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 12px rgba(249,115,22,0.75)) drop-shadow(0 6px 12px rgba(0,0,0,0.6));
 }
 
 .falling-word.skin-rock {
   background-image: url("assets/game/meteor-rock.png");
-  filter: drop-shadow(0 0 14px rgba(168,85,247,0.6)) drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 12px rgba(168,85,247,0.6)) drop-shadow(0 6px 12px rgba(0,0,0,0.6));
 }
 
 .falling-word.skin-ice {
   background-image: url("assets/game/meteor-ice.png");
-  filter: drop-shadow(0 0 18px rgba(56,189,248,0.85)) drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 0 14px rgba(56,189,248,0.85)) drop-shadow(0 6px 12px rgba(0,0,0,0.6));
 }
 
 .falling-word.is-long {
-  font-size: 0.88rem;
-  width: 152px;
-  height: 152px;
+  font-size: 0.82rem;
+  width: 104px;
+  height: 104px;
 }
 
 .falling-word.targeted {
   background-image: url("assets/game/meteor-target.png");
   color: #FFFBEB;
-  text-shadow: 0 0 12px rgba(251,191,36,1), 0 0 24px rgba(245,158,11,0.95), 0 2px 6px rgba(0,0,0,1);
-  filter: drop-shadow(0 0 24px rgba(251,191,36,0.95)) drop-shadow(0 0 36px rgba(239,68,68,0.8));
+  text-shadow: 0 0 12px rgba(251,191,36,1), 0 0 20px rgba(245,158,11,0.95), 0 2px 6px rgba(0,0,0,1);
+  filter: drop-shadow(0 0 20px rgba(251,191,36,0.95)) drop-shadow(0 0 30px rgba(239,68,68,0.8));
 }
 
 .falling-word.is-pop {
@@ -676,15 +676,15 @@ body {
   0% {
     transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(0.85);
     opacity: 1;
-    filter: brightness(2.2) drop-shadow(0 0 35px #FFEDD5);
+    filter: brightness(2.2) drop-shadow(0 0 30px #FFEDD5);
   }
   40% {
-    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.65);
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.55);
     opacity: 0.95;
-    filter: brightness(1.6) drop-shadow(0 0 28px #F97316);
+    filter: brightness(1.6) drop-shadow(0 0 24px #F97316);
   }
   100% {
-    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(2.15);
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.95);
     opacity: 0;
     filter: brightness(0.9);
   }
@@ -698,8 +698,8 @@ body {
 /* Explosion Spark Particles */
 .wg-spark {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9;
@@ -708,7 +708,7 @@ body {
 
 @keyframes sparkFly {
   0% {
-    transform: translate(0, 0) scale(1.5);
+    transform: translate(0, 0) scale(1.4);
     opacity: 1;
   }
   100% {
@@ -756,18 +756,18 @@ body {
 }
 
 /* =========================================
-   Cookie Typing Runner — right-facing rebuild
+   Hansel & Gretel Fairy Tale Runner
    ========================================= */
 .cr-stage {
   flex: 1;
   min-height: 0;
-  background: #1c1020;
+  background: #FFF1F2;
   border-radius: 24px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 3px solid #f59e0b;
-  box-shadow: 0 18px 36px rgba(245, 158, 11, 0.18);
+  border: 3px solid #F43F5E;
+  box-shadow: 0 18px 36px rgba(244, 63, 94, 0.18);
 }
 
 .cr-hud {
@@ -776,8 +776,8 @@ body {
   align-items: center;
   gap: 16px;
   padding: 10px 18px;
-  background: linear-gradient(90deg, rgba(28, 16, 32, 0.94), rgba(69, 26, 23, 0.9));
-  border-bottom: 2px solid rgba(245, 158, 11, 0.45);
+  background: linear-gradient(90deg, #881337 0%, #4C0519 100%);
+  border-bottom: 2px solid #FB7185;
   z-index: 20;
 }
 
@@ -790,19 +790,19 @@ body {
 }
 
 .cr-hp-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.7));
+  filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.8));
 }
 
 .cr-hp-track {
   flex: 1;
   height: 20px;
-  background: #1a0b10;
+  background: #1F070E;
   border-radius: 12px;
   overflow: hidden;
-  border: 2px solid #fbbf24;
+  border: 2px solid #FDE047;
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.55);
 }
 
@@ -811,18 +811,18 @@ body {
   width: 100%;
   background: repeating-linear-gradient(
     45deg,
-    #fb7185 0 10px,
-    #ef4444 10px 20px
+    #FB7185 0 10px,
+    #F43F5E 10px 20px
   );
   transition: width 0.25s linear;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.8);
 }
 
 .cr-hp-fill.is-low {
   background: repeating-linear-gradient(
     45deg,
-    #7f1d1d 0 10px,
-    #dc2626 10px 20px
+    #991B1B 0 10px,
+    #DC2626 10px 20px
   );
 }
 
@@ -830,7 +830,7 @@ body {
   font-family: var(--font-en);
   font-weight: 900;
   font-size: 1.1rem;
-  color: #fde68a;
+  color: #FDE047;
   min-width: 42px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
 }
@@ -843,20 +843,20 @@ body {
 }
 
 .cr-chip {
-  background: rgba(15, 23, 42, 0.72);
-  border: 1.5px solid #f59e0b;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1.5px solid #FB7185;
   border-radius: 14px;
   padding: 4px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f8fafc;
+  color: #F8FAFC;
 }
 
 .cr-chip span {
   font-size: 0.72rem;
   font-weight: 800;
-  color: #fcd34d;
+  color: #FDE047;
   letter-spacing: 0.04em;
 }
 
@@ -867,21 +867,22 @@ body {
 }
 
 .cr-combo strong {
-  color: #fb923c;
+  color: #FB923C;
 }
 
 .cr-world {
   flex: 1;
   position: relative;
   overflow: hidden;
-  min-height: 230px;
+  min-height: 240px;
+  background: #FFE4E6;
 }
 
 .cr-world.is-hurt::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 18% 70%, rgba(220, 38, 38, 0.28), transparent 55%);
+  background: radial-gradient(circle at 18% 70%, rgba(225, 29, 72, 0.35), transparent 55%);
   pointer-events: none;
   z-index: 12;
 }
@@ -889,11 +890,11 @@ body {
 .cr-bg {
   position: absolute;
   inset: 0 0 52px 0;
-  background-image: url("assets/runner/bg-sky.jpg");
+  background-image: url("assets/runner/bg-fairytale.jpg");
   background-repeat: repeat-x;
   background-size: auto 100%;
   background-position: 0 0;
-  animation: crScrollBg 22s linear infinite;
+  animation: crScrollBg 26s linear infinite;
   transition: opacity 0.35s ease;
 }
 
@@ -902,7 +903,7 @@ body {
 }
 
 .cr-world.is-dashing .cr-bg {
-  animation-duration: 7s;
+  animation-duration: 8s;
 }
 
 .cr-ground {
@@ -910,103 +911,63 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 58px;
-  background-image: url("assets/runner/ground.jpg");
-  background-repeat: repeat-x;
-  background-size: auto 100%;
-  border-top: 4px solid #fbbf24;
-  animation: crScrollGround 1.6s linear infinite;
+  height: 56px;
+  background: #78350F;
+  border-top: 5px solid #F43F5E;
   z-index: 4;
-}
-
-.cr-world.is-dashing .cr-ground {
-  animation-duration: 0.55s;
 }
 
 @keyframes crScrollBg {
   from { background-position: 0 0; }
-  to { background-position: -1280px 0; }
-}
-
-@keyframes crScrollGround {
-  from { background-position: 0 0; }
-  to { background-position: -640px 0; }
+  to { background-position: -1920px 0; }
 }
 
 .cr-layer {
   position: absolute;
-  inset: 0 0 58px 0;
+  inset: 0 0 56px 0;
   pointer-events: none;
   z-index: 6;
 }
 
+/* Sweet Snacks along Ground Lane */
 .cr-jelly {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 56px;
-  height: 56px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.28));
   will-change: transform;
 }
 
 .cr-jelly.is-eaten {
-  animation: crJellyEat 0.36s ease-in forwards;
+  animation: crSnackEat 0.4s ease-out forwards;
+}
+
+@keyframes crSnackEat {
+  0% { opacity: 1; transform: scale(1); filter: brightness(1.5); }
+  45% { opacity: 0.95; transform: scale(1.35) translateY(-14px); filter: brightness(2) drop-shadow(0 0 12px #FDE047); }
+  100% { opacity: 0; transform: scale(0.2) translateY(-26px); }
 }
 
 .cr-hp-jelly {
   position: absolute;
   right: 20%;
-  bottom: 62px;
-  width: 148px;
-  height: 148px;
+  bottom: 58px;
+  width: 90px;
+  height: 90px;
   object-fit: contain;
   z-index: 9;
-  filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.75));
+  filter: drop-shadow(0 0 18px rgba(244, 63, 94, 0.85));
   animation: crHpJellyIdle 0.75s ease-in-out infinite alternate;
 }
 
 .cr-hp-jelly.is-eaten {
-  animation: crHpJellyEat 0.55s ease-in forwards;
+  animation: crSnackEat 0.5s ease-in forwards;
 }
 
 @keyframes crHpJellyIdle {
   from { transform: translateY(0) scale(1); }
-  to { transform: translateY(-14px) scale(1.07); }
-}
-
-@keyframes crHpJellyEat {
-  0% { opacity: 1; transform: translate(0, 0) scale(1); }
-  45% { opacity: 1; transform: translate(-90px, 16px) scale(1.22); }
-  100% { opacity: 0; transform: translate(-170px, 36px) scale(0.12); }
-}
-
-@keyframes crJellyEat {
-  0% { opacity: 1; transform: scale(1); }
-  70% { opacity: 1; transform: scale(1.25); }
-  100% { opacity: 0; transform: scale(0.2); }
-}
-
-.cr-obstacle {
-  position: absolute;
-  bottom: 6px;
-  left: 70%;
-  width: 92px;
-  height: 92px;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.35));
-  z-index: 7;
-}
-
-.cr-obstacle.is-slamming {
-  animation: crSlam 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes crSlam {
-  0% { transform: translateX(220px) scale(0.85); opacity: 0; }
-  55% { transform: translateX(-40px) scale(1.05); opacity: 1; }
-  100% { transform: translateX(-160px) scale(0.9); opacity: 0; }
+  to { transform: translateY(-10px) scale(1.08); }
 }
 
 .cr-hero-wrap {
@@ -1021,12 +982,12 @@ body {
 }
 
 .cr-hero-wrap.is-dashing {
-  transform: translateX(160px) scale(1.08);
+  transform: translateX(160px) scale(1.06);
 }
 
 .cr-hero-wrap.is-world-exit {
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  transform: translateX(120vw) scale(1.08);
+  transform: translateX(120vw) scale(1.06);
 }
 
 .cr-hero-wrap.is-world-enter {
@@ -1063,8 +1024,8 @@ body {
 }
 
 .cr-hero-wrap.is-fallen {
-  transform: translate(8px, 22px) rotate(82deg);
-  transform-origin: 60% 88%;
+  transform: translate(6px, 16px) rotate(22deg);
+  transform-origin: 50% 90%;
 }
 
 .cr-hero-wrap.is-getting-up {
@@ -1072,38 +1033,23 @@ body {
 }
 
 @keyframes crGetUp {
-  0% { transform: translate(8px, 22px) rotate(82deg); }
+  0% { transform: translate(6px, 16px) rotate(22deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 @keyframes crHit {
   0% { transform: translateX(0); filter: none; }
-  25% { transform: translateX(-22px) rotate(-8deg); filter: brightness(1.4) sepia(0.4) hue-rotate(-20deg); }
-  55% { transform: translateX(16px) rotate(7deg); }
+  25% { transform: translateX(-18px) rotate(-8deg); filter: brightness(1.4) sepia(0.3) hue-rotate(-20deg); }
+  55% { transform: translateX(14px) rotate(6deg); }
   100% { transform: translateX(0); filter: none; }
 }
 
 .cr-hero {
-  width: 118px;
-  height: 118px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35));
   image-rendering: auto;
-}
-
-.cr-pet {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  margin-bottom: 54px;
-  margin-right: -10px;
-  animation: crPetHover 1.1s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.7));
-}
-
-@keyframes crPetHover {
-  from { transform: translateY(0) rotate(-6deg); }
-  to { transform: translateY(-14px) rotate(8deg); }
 }
 
 .cr-float {
