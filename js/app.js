@@ -28,6 +28,34 @@ class HancomTajaApp {
     this.spawnTimer = null;
     this.isGameOver = false;
 
+    // Cookie Typing Runner State
+    this.runnerDistance = 0;
+    this.runnerScore = 0;
+    this.runnerCombo = 0;
+    this.runnerMaxCombo = 0;
+    this.runnerJellies = [];
+    this.runnerObstacles = [];
+    this.runnerAnimationId = null;
+    this.cookieFrames = [
+      'assets/runner/cookie-run-1.png',
+      'assets/runner/cookie-run-2.png',
+      'assets/runner/cookie-run-3.png',
+      'assets/runner/cookie-run-4.png',
+      'assets/runner/cookie-run-5.png',
+      'assets/runner/cookie-run-6.png'
+    ];
+    this.cookieFrame = 0;
+    this.runnerWorlds = [
+      { src: 'assets/runner/bg-sky.jpg', name: '캔디 왕국', accent: '#fbbf24' },
+      { src: 'assets/runner/bg-choco.jpg', name: '초콜릿 숲', accent: '#b45309' },
+      { src: 'assets/runner/bg-cloud.jpg', name: '솜사탕 하늘', accent: '#f9a8d4' },
+      { src: 'assets/runner/bg-beach.jpg', name: '레몬소다 해변', accent: '#facc15' },
+      { src: 'assets/runner/bg-canyon.jpg', name: '베리 협곡', accent: '#fb7185' },
+      { src: 'assets/runner/bg-aurora.jpg', name: '별사탕 밤하늘', accent: '#a78bfa' }
+    ];
+    this.runnerStageIndex = 0;
+    this.runnerWorldChanging = false;
+
     this.initElements();
     this.bindEvents();
     // Do not auto-start a mode here, wait for landing screen selection
@@ -68,6 +96,32 @@ class HancomTajaApp {
     this.fallingArea = document.getElementById('falling-area');
     this.gameInput = document.getElementById('game-input');
 
+    // Cookie Run Typing Runner UI
+    this.runnerStage = document.getElementById('runner-game-stage');
+    this.runnerHpFill = document.getElementById('runner-hp-fill');
+    this.runnerHpText = document.getElementById('runner-hp-text');
+    this.runnerDistanceEl = document.getElementById('runner-distance');
+    this.runnerScoreEl = document.getElementById('runner-score');
+    this.runnerComboEl = document.getElementById('runner-combo');
+    this.runnerDrainEl = document.getElementById('runner-drain');
+    this.runnerWorldNameEl = document.getElementById('runner-world-name');
+    this.runnerWorldBanner = document.getElementById('runner-world-banner');
+    this.runnerHpJelly = document.getElementById('runner-hp-jelly');
+    this.runnerBg = document.getElementById('runner-bg');
+    this.runnerGround = document.getElementById('runner-ground');
+    this.runnerWorld = document.getElementById('runner-world');
+    this.runnerJellyTrack = document.getElementById('runner-jelly-track');
+    this.runnerCharWrap = document.getElementById('runner-char-wrap');
+    this.runnerObstacleTrack = document.getElementById('runner-obstacle-track');
+    this.runnerChar = document.getElementById('runner-char');
+    this.runnerPet = document.getElementById('runner-pet');
+    this.runnerDashEffect = document.getElementById('runner-dash-effect');
+    this.runnerCrashEffect = document.getElementById('runner-crash-effect');
+    this.runnerStoryTitle = document.getElementById('runner-story-title');
+    this.runnerStoryProgress = document.getElementById('runner-story-progress');
+    this.runnerStoryTarget = document.getElementById('runner-story-target');
+    this.runnerInput = document.getElementById('runner-input');
+
     // Modal UI
     this.resultModal = document.getElementById('result-modal');
     this.modalTitle = document.getElementById('modal-title');
@@ -103,15 +157,20 @@ class HancomTajaApp {
         this.startLongPractice();
       } else if (this.currentMode === 'game') {
         this.startWordGame();
+      } else if (this.currentMode === 'runner') {
+        this.startRunnerGame();
       }
     });
 
     // Sound toggle
     this.btnSound.addEventListener('click', () => {
       const enabled = soundEngine.toggleSound();
-      this.btnSound.innerHTML = enabled ? 
-        '<i class="fa-solid fa-volume-high"></i>' : 
+      this.btnSound.innerHTML = enabled ?
+        '<i class="fa-solid fa-volume-high"></i>' :
         '<i class="fa-solid fa-volume-xmark"></i>';
+      if (enabled && this.currentMode === 'runner' && !this.isGameOver) {
+        soundEngine.startRunnerBgm();
+      }
     });
 
     this.btnBack.addEventListener('click', () => {
@@ -150,6 +209,26 @@ class HancomTajaApp {
         this.handleGameWordSubmit();
       }
     });
+    this.gameInput.addEventListener('input', () => this.highlightTargetWords());
+
+    // Cookie Typing Runner input (IME-safe)
+    if (this.runnerInput) {
+      this.runnerInput.addEventListener('compositionstart', () => {
+        this.runnerComposing = true;
+      });
+      this.runnerInput.addEventListener('compositionend', (e) => {
+        this.runnerComposing = false;
+        this.handleRunnerTypingInput(e);
+      });
+      this.runnerInput.addEventListener('input', (e) => this.handleRunnerTypingInput(e));
+      this.runnerInput.addEventListener('keydown', (e) => {
+        soundEngine.playKeyPress();
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.handleRunnerLineSubmit();
+        }
+      });
+    }
 
     // Modal Confirm
     this.btnModalConfirm.addEventListener('click', () => {
@@ -162,6 +241,7 @@ class HancomTajaApp {
   showLandingScreen() {
     this.stopTimer();
     this.stopWordGameLoop();
+    this.stopRunnerGameLoop();
     this.mainApp.classList.add('hidden');
     if (this.landingScreen) {
       this.landingScreen.style.display = 'flex';
@@ -191,6 +271,7 @@ class HancomTajaApp {
     this.currentMode = mode;
     this.stopTimer();
     this.stopWordGameLoop();
+    this.stopRunnerGameLoop();
 
     // Reset stats
     this.elapsedSeconds = 0;
@@ -209,19 +290,29 @@ class HancomTajaApp {
     const badgeTitles = {
       short: '단문연습',
       long: '장문연습',
-      game: '낱말게임'
+      game: '낱말게임',
+      runner: '타자러너'
     };
-    this.modeBadge.textContent = badgeTitles[mode];
+    this.modeBadge.textContent = badgeTitles[mode] || '타자연습';
 
     // Show/Hide Stages
     if (mode === 'game') {
       this.textStage.classList.add('hidden');
+      if (this.runnerStage) this.runnerStage.classList.add('hidden');
       this.gameStage.classList.remove('hidden');
       this.populateCategorySelect(['쉬움', '보통', '어려움']);
       this.startWordGame();
+    } else if (mode === 'runner') {
+      this.textStage.classList.add('hidden');
+      this.gameStage.classList.add('hidden');
+      if (this.runnerStage) this.runnerStage.classList.remove('hidden');
+      const novelTitles = TAJA_TEXTS.novels.map(n => n.title);
+      this.populateCategorySelect(novelTitles);
+      this.startRunnerGame();
     } else {
       this.textStage.classList.remove('hidden');
       this.gameStage.classList.add('hidden');
+      if (this.runnerStage) this.runnerStage.classList.add('hidden');
 
       if (mode === 'short') {
         this.populateCategorySelect(['속담 및 명언']);
@@ -556,7 +647,7 @@ class HancomTajaApp {
   // --- MODE 3: WORD GAME (FALLING WORDS ARCADE) ---
   startWordGame() {
     this.stopWordGameLoop();
-    this.fallingArea.innerHTML = '';
+    if (this.fallingArea) this.fallingArea.innerHTML = '';
     this.fallingWords = [];
     this.gameScore = 0;
     this.gameLevel = 1;
@@ -564,10 +655,16 @@ class HancomTajaApp {
     this.isGameOver = false;
 
     this.updateGameHud();
-    this.gameInput.value = '';
-    this.gameInput.focus();
+
+    setTimeout(() => {
+      if (this.gameInput) {
+        this.gameInput.value = '';
+        this.gameInput.focus();
+      }
+    }, 50);
 
     this.startTimer();
+    this.spawnWord(); // Spawn 1st word immediately!
 
     this.spawnTimer = setInterval(() => this.spawnWord(), 2200);
 
@@ -588,7 +685,7 @@ class HancomTajaApp {
   }
 
   spawnWord() {
-    if (this.isGameOver) return;
+    if (this.isGameOver || this.currentMode !== 'game') return;
 
     const diff = this.categorySelect.value === '어려움' ? 'hard' : (this.categorySelect.value === '보통' ? 'medium' : 'easy');
     const wordList = TAJA_TEXTS.words[diff] || TAJA_TEXTS.words.easy;
@@ -613,40 +710,54 @@ class HancomTajaApp {
       this.recentWords.shift();
     }
 
-    const areaWidth = Math.max(200, this.fallingArea.clientWidth - 120);
-    const posX = Math.floor(Math.random() * areaWidth) + 20;
+    const clientW = (this.fallingArea && this.fallingArea.clientWidth > 200) ? this.fallingArea.clientWidth : 650;
+    const areaWidth = Math.max(200, clientW - 150);
+    const posX = Math.floor(Math.random() * areaWidth) + 16;
 
+    const skins = ['skin-fire', 'skin-rock', 'skin-ice'];
     const el = document.createElement('div');
-    el.className = 'falling-word';
+    el.className = 'falling-word ' + skins[Math.floor(Math.random() * skins.length)];
+    if (randomWord.length >= 5) el.classList.add('is-long');
     el.textContent = randomWord;
     el.style.left = `${posX}px`;
-    el.style.transform = `translateY(0px)`;
 
     const wordObj = {
       word: randomWord,
       el: el,
       x: posX,
       y: 0,
-      speed: 1.2 + (this.gameLevel * 0.4)
+      speed: 1.2 + (this.gameLevel * 0.4),
+      rot: (Math.random() * 50 - 25),
+      spin: (Math.random() * 0.55 + 0.12) * (Math.random() < 0.5 ? 1 : -1)
     };
+    el.style.transform = `translateY(0px) rotate(${wordObj.rot}deg)`;
 
-    this.fallingArea.appendChild(el);
-    this.fallingWords.push(wordObj);
+    if (this.fallingArea) {
+      this.fallingArea.appendChild(el);
+      this.fallingWords.push(wordObj);
+    }
   }
 
   updateWordPositions() {
-    if (this.isGameOver) return;
-    const maxHeight = this.fallingArea.clientHeight - 40;
+    if (this.isGameOver || !this.fallingArea) return;
+    const clientH = (this.fallingArea.clientHeight > 100) ? this.fallingArea.clientHeight : 500;
+    const maxHeight = clientH - 108;
 
     for (let i = this.fallingWords.length - 1; i >= 0; i--) {
       const w = this.fallingWords[i];
+      if (w.leaving) continue;
       w.y += w.speed;
-      w.el.style.transform = `translateY(${w.y}px)`;
+      w.rot += w.spin;
+      w.el.style.transform = `translateY(${w.y}px) rotate(${w.rot}deg)`;
 
       // Word reached bottom
       if (w.y >= maxHeight) {
         soundEngine.playError();
-        w.el.remove();
+        w.leaving = true;
+        w.el.style.setProperty('--wy', `${w.y}px`);
+        w.el.style.setProperty('--rot', `${w.rot}deg`);
+        w.el.classList.add('is-miss');
+        setTimeout(() => { if (w.el) w.el.remove(); }, 320);
         this.fallingWords.splice(i, 1);
         
         this.gameLives--;
@@ -670,9 +781,12 @@ class HancomTajaApp {
     for (let i = 0; i < this.fallingWords.length; i++) {
       if (this.fallingWords[i].word === inputVal) {
         soundEngine.playExplosion();
-        
-        // Remove word element
-        this.fallingWords[i].el.remove();
+        const hit = this.fallingWords[i];
+        hit.leaving = true;
+        hit.el.style.setProperty('--wy', `${hit.y}px`);
+        hit.el.style.setProperty('--rot', `${hit.rot}deg`);
+        hit.el.classList.add('is-pop');
+        setTimeout(() => { if (hit.el) hit.el.remove(); }, 400);
         this.fallingWords.splice(i, 1);
 
         this.gameScore += 100;
@@ -695,21 +809,31 @@ class HancomTajaApp {
     }
 
     this.gameInput.value = '';
+    this.highlightTargetWords();
     this.updateGameHud();
     this.updateStatsDisplay();
+  }
+
+  highlightTargetWords() {
+    const v = this.gameInput ? this.gameInput.value.trim() : '';
+    if (!this.fallingWords) return;
+    this.fallingWords.forEach((w) => {
+      if (!w.el || w.leaving) return;
+      w.el.classList.toggle('targeted', v.length > 0 && w.word.startsWith(v));
+    });
   }
 
   updateGameHud() {
     this.gameScoreEl.textContent = this.gameScore;
     this.gameLevelEl.textContent = this.gameLevel;
-    
-    // Heart icons
+
+    if (!this.gameLivesEl) return;
     let hearts = '';
     for (let i = 0; i < 5; i++) {
       if (i < this.gameLives) {
-        hearts += '<i class="fa-solid fa-heart"></i>';
+        hearts += '<img class="wg-heart" src="assets/game/heart.png" alt="">';
       } else {
-        hearts += '<i class="fa-regular fa-heart" style="color: #64748B;"></i>';
+        hearts += '<img class="wg-heart is-empty" src="assets/game/heart-empty.png" alt="">';
       }
     }
     this.gameLivesEl.innerHTML = hearts;
@@ -724,12 +848,549 @@ class HancomTajaApp {
     if (this.fallingArea) this.fallingArea.innerHTML = '';
     this.fallingWords = [];
 
-    this.modalTitle.textContent = '게임 오버! 🎮';
+    this.modalTitle.textContent = '운석 방어 실패! ☄️';
     this.resCPM.textContent = `${this.gameScore} 점`;
     this.resMaxCPM.textContent = `레벨 ${this.gameLevel}`;
     this.resAcc.textContent = `${this.statAcc.textContent} %`;
     this.resTime.textContent = this.statTime.textContent;
 
+    this.resultModal.classList.remove('hidden');
+  }
+
+  // --- MODE 4: COOKIE TYPING RUNNER (right-facing, sentence dash, IME-safe) ---
+  startRunnerGame() {
+    this.stopRunnerGameLoop();
+
+    const selectedTitle = this.categorySelect ? this.categorySelect.value : '';
+    this.currentNovel = TAJA_TEXTS.novels.find(n => n.title === selectedTitle) || TAJA_TEXTS.novels[0];
+
+    this.runnerLineIndex = 0;
+    this.runnerHP = 100;
+    this.runnerDistance = 0;
+    this.runnerScore = 0;
+    this.runnerCombo = 0;
+    this.runnerMaxCombo = 0;
+    this.isGameOver = false;
+    this.runnerJellies = [];
+    this.runnerObstacles = [];
+    this.lastCorrectLen = 0;
+    this.runnerTypoLatched = false;
+    this.runnerFallen = false;
+    this.runnerComposing = false;
+    this.runnerDashing = false;
+    this.runnerWorldChanging = false;
+    this.runnerStageIndex = 0;
+    this.runnerHitUntil = 0;
+    this.cookieFrame = 0;
+    this.cookieFrameAcc = 0;
+    this.lastFrameTs = 0;
+    this.distAcc = 0;
+
+    if (this.runnerJellyTrack) this.runnerJellyTrack.innerHTML = '';
+    if (this.runnerObstacleTrack) this.runnerObstacleTrack.innerHTML = '';
+    if (this.runnerCharWrap) {
+      this.runnerCharWrap.classList.remove('is-dashing', 'is-hit', 'is-fallen', 'is-getting-up', 'is-world-exit', 'is-world-enter', 'is-world-arrive');
+      this.runnerCharWrap.style.transform = '';
+    }
+    if (this.runnerWorld) this.runnerWorld.classList.remove('is-dashing', 'is-hurt');
+    if (this.runnerHpJelly) {
+      this.runnerHpJelly.classList.add('hidden');
+      this.runnerHpJelly.classList.remove('is-eaten');
+    }
+    if (this.runnerChar) this.runnerChar.src = this.cookieFrames[0];
+    this.applyRunnerWorld(0, false);
+
+    this.updateRunnerHP(100);
+    this.updateRunnerHud();
+    this.renderRunnerTargetLine();
+
+    setTimeout(() => {
+      if (this.runnerInput) {
+        this.runnerInput.value = '';
+        this.runnerInput.focus();
+      }
+    }, 50);
+
+    this.startTimer();
+    this.startRunnerGameLoop();
+    soundEngine.startRunnerBgm();
+  }
+
+  startRunnerGameLoop() {
+    this.stopRunnerGameLoop(false);
+
+    this.runnerHpDrainTimer = setInterval(() => {
+      if (this.isGameOver || this.currentMode !== 'runner' || this.runnerWorldChanging) return;
+      this.runnerHP -= this.getRunnerHpDrain();
+      this.updateRunnerHP(this.runnerHP);
+      if (this.runnerHP <= 0) this.runnerGameOver();
+    }, 1000);
+
+    this.runnerJellySpawnTimer = setInterval(() => this.spawnRunnerJellyTrail(), 1600);
+
+    const tick = (ts) => {
+      if (this.isGameOver || this.currentMode !== 'runner') return;
+      const dt = this.lastFrameTs ? Math.min(48, ts - this.lastFrameTs) : 16;
+      this.lastFrameTs = ts;
+      this.stepRunnerWorld(dt);
+      this.runnerAnimationId = requestAnimationFrame(tick);
+    };
+    this.runnerAnimationId = requestAnimationFrame(tick);
+  }
+
+  stopRunnerGameLoop(stopBgm = true) {
+    if (this.runnerHpDrainTimer) clearInterval(this.runnerHpDrainTimer);
+    if (this.runnerJellySpawnTimer) clearInterval(this.runnerJellySpawnTimer);
+    if (this.runnerObstacleSpawnTimer) clearInterval(this.runnerObstacleSpawnTimer);
+    if (this.runnerAnimationId) cancelAnimationFrame(this.runnerAnimationId);
+
+    this.runnerHpDrainTimer = null;
+    this.runnerJellySpawnTimer = null;
+    this.runnerObstacleSpawnTimer = null;
+    this.runnerAnimationId = null;
+    if (stopBgm) soundEngine.stopRunnerBgm();
+  }
+
+  stepRunnerWorld(dt) {
+    this.distAcc += dt;
+    if (this.distAcc >= 180) {
+      this.distAcc = 0;
+      if (!this.runnerFallen) {
+        this.runnerDistance += this.runnerDashing ? 3 : 1;
+        this.updateRunnerHud();
+      }
+    }
+
+    this.cookieFrameAcc += dt;
+    const frameMs = this.runnerDashing ? 55 : 90;
+    if (this.cookieFrameAcc >= frameMs && !this.runnerFallen && Date.now() > this.runnerHitUntil) {
+      this.cookieFrameAcc = 0;
+      this.cookieFrame = (this.cookieFrame + 1) % this.cookieFrames.length;
+      if (this.runnerChar) this.runnerChar.src = this.cookieFrames[this.cookieFrame];
+    }
+
+    this.updateRunnerJellies();
+  }
+
+  renderRunnerTargetLine() {
+    if (!this.currentNovel || !this.runnerStoryTarget) return;
+    const line = this.currentNovel.lines[this.runnerLineIndex] || '';
+    if (this.runnerStoryTitle) this.runnerStoryTitle.textContent = this.currentNovel.title;
+    if (this.runnerStoryProgress) {
+      this.runnerStoryProgress.textContent = `${this.runnerLineIndex + 1} / ${this.currentNovel.lines.length} 문장`;
+    }
+    this.lastCorrectLen = 0;
+    this.runnerTypoLatched = false;
+    this.updateRunnerTargetDisplay(line, this.runnerInput ? this.runnerInput.value : '');
+  }
+
+  decomposeHangul(ch) {
+    if (!ch) return '';
+    const code = ch.charCodeAt(0);
+    if (code < 0xAC00 || code > 0xD7A3) return ch;
+    const idx = code - 0xAC00;
+    const cho = Math.floor(idx / 588);
+    const jung = Math.floor((idx % 588) / 28);
+    const jong = idx % 28;
+    const choList = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+    const jungList = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+    const jongList = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+    return choList[cho] + jungList[jung] + (jong > 0 ? jongList[jong] : '');
+  }
+
+  isValidTypingPrefix(input, target) {
+    if (!input) return true;
+    if (target.startsWith(input)) return true;
+    const head = input.slice(0, -1);
+    if (!target.startsWith(head)) return false;
+    const next = target[head.length] || '';
+    const last = input[input.length - 1];
+    if (!next || last === next) return !!next && last === next;
+    const dLast = this.decomposeHangul(last);
+    const dNext = this.decomposeHangul(next);
+    return dNext.startsWith(dLast) || dLast[0] === dNext[0];
+  }
+
+  getCommittedCorrectLen(input, target) {
+    let n = 0;
+    const max = Math.min(input.length, target.length);
+    for (let i = 0; i < max; i++) {
+      if (input[i] === target[i]) n++;
+      else break;
+    }
+    return n;
+  }
+
+  updateRunnerTargetDisplay(targetLine, currentInput) {
+    if (!this.runnerStoryTarget) return;
+    this.runnerStoryTarget.innerHTML = '';
+
+    for (let i = 0; i < targetLine.length; i++) {
+      const span = document.createElement('span');
+      const targetChar = targetLine[i];
+      span.innerHTML = targetChar === ' ' ? '&nbsp;' : this.escapeHtml(targetChar);
+
+      if (i < currentInput.length) {
+        if (currentInput[i] === targetChar) {
+          span.className = 'correct';
+        } else if (i === currentInput.length - 1 && this.isValidTypingPrefix(currentInput, targetLine)) {
+          span.className = 'current';
+        } else {
+          span.className = 'wrong';
+        }
+      } else if (i === currentInput.length) {
+        span.className = 'current';
+      }
+      this.runnerStoryTarget.appendChild(span);
+    }
+  }
+
+  handleRunnerTypingInput(e) {
+    if (this.isGameOver || !this.currentNovel || !this.runnerInput) return;
+
+    const targetLine = this.currentNovel.lines[this.runnerLineIndex] || '';
+    const currentInput = this.runnerInput.value;
+    this.updateRunnerTargetDisplay(targetLine, currentInput);
+
+    const composing = this.runnerComposing || (e && e.isComposing);
+    if (composing) return;
+
+    const isDelete = e && e.inputType && e.inputType.indexOf('delete') === 0;
+    if (isDelete || currentInput.length < this.lastCorrectLen) {
+      this.lastCorrectLen = this.getCommittedCorrectLen(currentInput, targetLine);
+      const stillWrong = !this.isValidTypingPrefix(currentInput, targetLine);
+      this.runnerTypoLatched = stillWrong;
+      if (!stillWrong) this.setRunnerFallen(false);
+      this.updateStatsDisplay();
+      return;
+    }
+
+    this.totalStrokes++;
+
+    if (!this.isValidTypingPrefix(currentInput, targetLine)) {
+      if (!this.runnerTypoLatched) {
+        this.runnerTypoLatched = true;
+        this.errorCount++;
+        this.setRunnerFallen(true);
+      }
+      this.updateStatsDisplay();
+      return;
+    }
+
+    this.setRunnerFallen(false);
+    this.runnerTypoLatched = false;
+    const committed = this.getCommittedCorrectLen(currentInput, targetLine);
+    if (committed > this.lastCorrectLen) {
+      const gained = committed - this.lastCorrectLen;
+      this.lastCorrectLen = committed;
+      this.correctStrokes += gained;
+      this.runnerScore += gained;
+      this.runnerDistance += 2 * gained;
+      this.updateRunnerHud();
+      this.checkWorldAdvance();
+    }
+
+    this.updateStatsDisplay();
+
+    if (currentInput === targetLine && targetLine.length > 0) {
+      this.handleRunnerLineSubmit();
+    }
+  }
+
+  handleRunnerLineSubmit() {
+    if (this.isGameOver || !this.currentNovel || !this.runnerInput) return;
+
+    const targetLine = this.currentNovel.lines[this.runnerLineIndex] || '';
+    const typed = this.runnerInput.value;
+    if (typed !== targetLine) return;
+
+    soundEngine.playCompleteLine();
+    if (!this.runnerWorldChanging) this.beginJellyDash();
+
+    this.runnerHP = Math.min(100, this.runnerHP + 20);
+    this.updateRunnerHP(this.runnerHP);
+    soundEngine.playHeal();
+
+    this.runnerCombo++;
+    if (this.runnerCombo > this.runnerMaxCombo) this.runnerMaxCombo = this.runnerCombo;
+    this.runnerDistance += 40;
+
+    if (this.runnerDashEffect) {
+      this.runnerDashEffect.textContent = '문장 완성! 체력 +20';
+      this.runnerDashEffect.classList.remove('hidden');
+      setTimeout(() => {
+        if (this.runnerDashEffect) this.runnerDashEffect.classList.add('hidden');
+      }, 900);
+    }
+
+    this.runnerLineIndex++;
+    if (this.runnerLineIndex >= this.currentNovel.lines.length) {
+      this.runnerLineIndex = 0;
+    }
+
+    this.runnerInput.value = '';
+    this.renderRunnerTargetLine();
+    this.updateRunnerHud();
+  }
+
+  beginJellyDash() {
+    this.runnerDashing = true;
+    if (this.runnerWorld) this.runnerWorld.classList.add('is-dashing');
+    if (this.runnerCharWrap) this.runnerCharWrap.classList.add('is-dashing');
+    soundEngine.playDash();
+
+    this.runnerJellies.forEach((j) => {
+      if (!j.el) return;
+      j.el.classList.add('is-eaten');
+      setTimeout(() => { if (j.el) j.el.remove(); }, 360);
+    });
+    this.runnerJellies = [];
+
+    setTimeout(() => {
+      this.runnerDashing = false;
+      if (this.runnerWorld) this.runnerWorld.classList.remove('is-dashing');
+      if (this.runnerCharWrap) this.runnerCharWrap.classList.remove('is-dashing');
+    }, 700);
+  }
+
+  setRunnerFallen(fallen) {
+    if (this.runnerFallen === fallen) return;
+    if (this.isGameOver || this.runnerWorldChanging) return;
+
+    this.runnerFallen = fallen;
+    if (!this.runnerCharWrap) return;
+
+    if (fallen) {
+      soundEngine.playCrash();
+      this.runnerCombo = 0;
+      this.updateRunnerHud();
+      this.runnerCharWrap.classList.remove('is-dashing', 'is-getting-up', 'is-hit');
+      this.runnerCharWrap.classList.add('is-fallen');
+      if (this.runnerChar) this.runnerChar.src = 'assets/runner/cookie-hit.png';
+      if (this.runnerCrashEffect) {
+        this.runnerCrashEffect.textContent = '넘어졌어요! 문장을 고치면 일어납니다';
+        this.runnerCrashEffect.classList.remove('hidden');
+      }
+      return;
+    }
+
+    this.runnerCharWrap.classList.remove('is-fallen');
+    this.runnerCharWrap.classList.add('is-getting-up');
+    setTimeout(() => {
+      if (this.runnerCharWrap) this.runnerCharWrap.classList.remove('is-getting-up');
+    }, 350);
+    if (this.runnerCrashEffect) this.runnerCrashEffect.classList.add('hidden');
+    if (this.runnerChar) this.runnerChar.src = this.cookieFrames[this.cookieFrame];
+  }
+
+  spawnRunnerJellyTrail() {
+    if (this.isGameOver || this.currentMode !== 'runner' || this.runnerDashing || this.runnerWorldChanging || this.runnerFallen) return;
+    if (!this.runnerJellyTrack || !this.runnerWorld) return;
+    if (this.runnerJellies.length > 22) return;
+
+    const kinds = [
+      'assets/runner/jelly-bear.png',
+      'assets/runner/jelly-star.png',
+      'assets/runner/jelly-heart.png'
+    ];
+    const worldW = this.runnerWorld.clientWidth > 200 ? this.runnerWorld.clientWidth : 700;
+    const count = 3 + Math.floor(Math.random() * 3);
+    const lane = 28 + Math.random() * 80;
+    const speed = 3.1 + Math.min(2.4, this.runnerCombo * 0.18) + this.runnerStageIndex * 0.28;
+
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('img');
+      el.className = 'cr-jelly';
+      el.src = kinds[Math.floor(Math.random() * kinds.length)];
+      el.alt = '';
+      const x = worldW + 30 + i * 54;
+      const y = lane + (i % 2) * 14;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      this.runnerJellyTrack.appendChild(el);
+      this.runnerJellies.push({ el, x, y, speed });
+    }
+  }
+
+  updateRunnerJellies() {
+    if (!this.runnerJellies) return;
+    const scroll = this.runnerDashing ? 9.5 : 3.2;
+
+    for (let i = this.runnerJellies.length - 1; i >= 0; i--) {
+      const j = this.runnerJellies[i];
+      j.x -= j.speed || scroll;
+      if (j.el) {
+        j.el.style.left = `${j.x}px`;
+        j.el.style.top = `${j.y}px`;
+      }
+
+      if (j.x < -70) {
+        if (j.el) j.el.remove();
+        this.runnerJellies.splice(i, 1);
+      }
+    }
+  }
+
+  updateRunnerHP(hp) {
+    this.runnerHP = Math.max(0, Math.min(100, hp));
+    if (this.runnerHpFill) {
+      this.runnerHpFill.style.width = `${this.runnerHP}%`;
+      this.runnerHpFill.classList.toggle('is-low', this.runnerHP < 30);
+    }
+    if (this.runnerHpText) this.runnerHpText.textContent = `${Math.round(this.runnerHP)}`;
+    if (this.runnerWorld) this.runnerWorld.classList.toggle('is-hurt', this.runnerHP < 30);
+  }
+
+  getRunnerHpDrain() {
+    return 1 + Math.floor(Math.max(0, this.runnerScore) / 50);
+  }
+
+  applyRunnerWorld(index, animateBg) {
+    this.runnerStageIndex = index;
+    const world = this.runnerWorlds[index % this.runnerWorlds.length];
+    if (!world) return;
+
+    const paint = () => {
+      if (this.runnerBg) this.runnerBg.style.backgroundImage = `url("${world.src}")`;
+      if (this.runnerGround) this.runnerGround.style.borderTopColor = world.accent;
+      if (this.runnerWorldNameEl) this.runnerWorldNameEl.textContent = world.name;
+    };
+
+    if (animateBg && this.runnerBg) {
+      this.runnerBg.classList.add('is-fading');
+      setTimeout(() => {
+        paint();
+        this.runnerBg.classList.remove('is-fading');
+      }, 280);
+    } else {
+      paint();
+    }
+  }
+
+  checkWorldAdvance() {
+    if (this.runnerWorldChanging || this.isGameOver) return;
+    const targetStage = Math.floor(this.runnerScore / 100);
+    if (targetStage > this.runnerStageIndex) {
+      this.beginWorldTransition(targetStage);
+    }
+  }
+
+  spawnWorldHpJelly() {
+    if (!this.runnerHpJelly) return;
+    this.runnerHpJelly.classList.remove('hidden', 'is-eaten');
+  }
+
+  eatWorldHpJelly() {
+    if (this.isGameOver || this.currentMode !== 'runner') return;
+    if (this.runnerHpJelly) this.runnerHpJelly.classList.add('is-eaten');
+    this.runnerHP = Math.min(100, this.runnerHP + 30);
+    this.updateRunnerHP(this.runnerHP);
+    soundEngine.playHeal();
+    if (this.runnerWorldBanner) {
+      const world = this.runnerWorlds[this.runnerStageIndex % this.runnerWorlds.length];
+      this.runnerWorldBanner.textContent = `${world ? world.name : '새 세계'} 도착! 체력 +30`;
+    }
+    if (this.runnerDashEffect) {
+      this.runnerDashEffect.textContent = '체력 젤리! +30';
+      this.runnerDashEffect.classList.remove('hidden');
+      setTimeout(() => {
+        if (this.runnerDashEffect) this.runnerDashEffect.classList.add('hidden');
+      }, 900);
+    }
+  }
+
+  beginWorldTransition(targetStage) {
+    if (this.runnerWorldChanging || this.isGameOver) return;
+    this.runnerWorldChanging = true;
+    this.runnerDashing = true;
+
+    if (this.runnerWorld) this.runnerWorld.classList.add('is-dashing');
+    if (this.runnerCharWrap) {
+      this.runnerCharWrap.classList.remove('is-dashing', 'is-hit', 'is-fallen', 'is-getting-up', 'is-world-enter', 'is-world-arrive');
+      this.runnerCharWrap.classList.add('is-world-exit');
+    }
+    soundEngine.playDash();
+
+    this.runnerJellies.forEach((j) => {
+      if (j.el) j.el.remove();
+    });
+    this.runnerJellies = [];
+
+    setTimeout(() => {
+      if (this.isGameOver || this.currentMode !== 'runner') {
+        this.runnerWorldChanging = false;
+        return;
+      }
+
+      this.applyRunnerWorld(targetStage, true);
+      this.spawnWorldHpJelly();
+
+      if (this.runnerCharWrap) {
+        this.runnerCharWrap.classList.remove('is-world-exit');
+        this.runnerCharWrap.classList.add('is-world-enter');
+      }
+
+      const world = this.runnerWorlds[targetStage % this.runnerWorlds.length];
+      if (this.runnerWorldBanner) {
+        this.runnerWorldBanner.textContent = `${world.name} 도착!`;
+        this.runnerWorldBanner.classList.remove('hidden');
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (this.runnerCharWrap) {
+            this.runnerCharWrap.classList.remove('is-world-enter');
+            this.runnerCharWrap.classList.add('is-world-arrive');
+          }
+        });
+      });
+
+      setTimeout(() => this.eatWorldHpJelly(), 380);
+
+      setTimeout(() => {
+        if (this.runnerCharWrap) {
+          this.runnerCharWrap.classList.remove('is-world-arrive', 'is-world-enter', 'is-world-exit');
+        }
+        if (this.runnerWorld) this.runnerWorld.classList.remove('is-dashing');
+        if (this.runnerWorldBanner) this.runnerWorldBanner.classList.add('hidden');
+        if (this.runnerHpJelly) {
+          this.runnerHpJelly.classList.add('hidden');
+          this.runnerHpJelly.classList.remove('is-eaten');
+        }
+        this.runnerDashing = false;
+        this.runnerWorldChanging = false;
+        this.updateRunnerHud();
+        this.checkWorldAdvance();
+      }, 1100);
+    }, 800);
+  }
+
+  updateRunnerHud() {
+    if (this.runnerDistanceEl) this.runnerDistanceEl.textContent = `${Math.floor(this.runnerDistance)} m`;
+    if (this.runnerScoreEl) this.runnerScoreEl.textContent = this.runnerScore;
+    if (this.runnerComboEl) this.runnerComboEl.textContent = `${this.runnerCombo}x`;
+    if (this.runnerDrainEl) this.runnerDrainEl.textContent = `-${this.getRunnerHpDrain()}`;
+    const world = this.runnerWorlds[this.runnerStageIndex % this.runnerWorlds.length];
+    if (this.runnerWorldNameEl && world) this.runnerWorldNameEl.textContent = world.name;
+  }
+
+  runnerGameOver() {
+    if (this.isGameOver) return;
+    this.isGameOver = true;
+    this.stopRunnerGameLoop();
+    this.stopTimer();
+
+    if (this.runnerJellyTrack) this.runnerJellyTrack.innerHTML = '';
+    if (this.runnerObstacleTrack) this.runnerObstacleTrack.innerHTML = '';
+    this.runnerJellies = [];
+    this.runnerObstacles = [];
+
+    soundEngine.playCrash();
+    this.modalTitle.textContent = '체력 고갈! 질주 종료';
+    this.resCPM.textContent = `${Math.floor(this.runnerDistance)} m`;
+    this.resMaxCPM.textContent = `${this.runnerScore} 점 (${this.runnerMaxCombo}x 최고 콤보)`;
+    this.resAcc.textContent = `${this.statAcc.textContent} %`;
+    this.resTime.textContent = this.statTime.textContent;
     this.resultModal.classList.remove('hidden');
   }
 

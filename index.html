@@ -93,19 +93,40 @@
         <div class="mode-card card-indigo magnetic-element" data-launch="game">
           <div class="card-top-bar">
             <div class="card-icon-avatar avatar-indigo">
-              <i class="fa-solid fa-gamepad"></i>
+              <i class="fa-solid fa-meteor"></i>
             </div>
-            <span class="card-chip chip-indigo">🎮 한글 아케이드</span>
+            <span class="card-chip chip-indigo">☄️ 우주 디펜스</span>
           </div>
           <div class="card-body">
             <h3 class="card-title">낱말 게임</h3>
-            <p class="card-desc">하늘에서 떨어지는 단어를 빠르게 파괴하여 점수를 올리는 스릴 만점 디펜스 게임!</p>
+            <p class="card-desc">우주에서 떨어지는 운석 낱말을 정확히 입력하면 운석이 폭발합니다. 지구를 지키세요!</p>
             <div class="card-tags">
-              <span class="tag-item">300+ 풍부한 단어</span>
-              <span class="tag-item">Enter / Space 제출</span>
+              <span class="tag-item">운석 폭발</span>
+              <span class="tag-item">Enter · Space 격추</span>
             </div>
             <div class="card-btn-wrap">
-              <span class="card-action-btn btn-indigo">게임 플레이 <i class="fa-solid fa-play"></i></span>
+              <span class="card-action-btn btn-indigo">운석 격추 <i class="fa-solid fa-play"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cookie Run Style Typing Runner Card -->
+        <div class="mode-card card-rose magnetic-element" data-launch="runner">
+          <div class="card-top-bar">
+            <div class="card-icon-avatar avatar-rose">
+              <i class="fa-solid fa-person-running"></i>
+            </div>
+            <span class="card-chip chip-rose">🏃 런닝 아케이드</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">타자 러너</h3>
+            <p class="card-desc">쿠키가 오른쪽으로 질주합니다. 문장을 완성하면 젤리를 먹으며 달리고, 오타 시 장애물에 부딪칩니다.</p>
+            <div class="card-tags">
+              <span class="tag-item">글자당 1점</span>
+              <span class="tag-item">100점마다 새 세계 · 체력 젤리 +30</span>
+            </div>
+            <div class="card-btn-wrap">
+              <span class="card-action-btn btn-rose">질주 시작 <i class="fa-solid fa-bolt"></i></span>
             </div>
           </div>
         </div>
@@ -188,6 +209,9 @@
           </button>
           <button class="tab-btn" data-mode="game">
             <i class="fa-solid fa-gamepad"></i> 낱말 게임
+          </button>
+          <button class="tab-btn" data-mode="runner">
+            <i class="fa-solid fa-person-running"></i> 타자 러너
           </button>
         </div>
 
@@ -300,22 +324,17 @@
       <!-- Stage: Word Game (Falling Words Arcade) -->
       <div id="word-game-stage" class="view-stage hidden">
         <div class="word-game-stage">
+          <div class="wg-bg"></div>
           <div class="game-hud">
             <div class="hud-item">
-              <span>점수:</span>
+              <span>점수</span>
               <span class="hud-value" id="game-score">0</span>
             </div>
             <div class="hud-item">
-              <span>레벨:</span>
+              <span>레벨</span>
               <span class="hud-value" id="game-level">1</span>
             </div>
-            <div class="lives-container" id="game-lives">
-              <i class="fa-solid fa-heart"></i>
-              <i class="fa-solid fa-heart"></i>
-              <i class="fa-solid fa-heart"></i>
-              <i class="fa-solid fa-heart"></i>
-              <i class="fa-solid fa-heart"></i>
-            </div>
+            <div class="lives-container" id="game-lives"></div>
           </div>
 
           <div class="falling-area" id="falling-area">
@@ -323,7 +342,56 @@
           </div>
 
           <div class="game-input-container">
-            <input type="text" id="game-input" class="game-input-box" placeholder="떨어지는 단어를 입력하고 Enter 또는 Space!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
+            <input type="text" id="game-input" class="game-input-box" placeholder="운석 낱말을 입력하고 Enter 또는 Space!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage: Cookie Typing Runner (rebuilt, right-facing) -->
+      <div id="runner-game-stage" class="view-stage hidden">
+        <div class="cr-stage">
+          <div class="cr-hud">
+            <div class="cr-hp">
+              <img class="cr-hp-icon" src="assets/runner/jelly-heart.png" alt="">
+              <div class="cr-hp-track">
+                <div class="cr-hp-fill" id="runner-hp-fill" style="width: 100%;"></div>
+              </div>
+              <span class="cr-hp-text" id="runner-hp-text">100</span>
+            </div>
+            <div class="cr-scores">
+              <div class="cr-chip"><span>세계</span><strong id="runner-world-name">캔디 왕국</strong></div>
+              <div class="cr-chip"><span>점수</span><strong id="runner-score">0</strong></div>
+              <div class="cr-chip"><span>초당 감소</span><strong id="runner-drain">-1</strong></div>
+              <div class="cr-chip"><span>거리</span><strong id="runner-distance">0 m</strong></div>
+              <div class="cr-chip cr-combo"><span>콤보</span><strong id="runner-combo">0x</strong></div>
+            </div>
+          </div>
+
+          <div class="cr-world" id="runner-world">
+            <div class="cr-bg" id="runner-bg"></div>
+            <div class="cr-layer" id="runner-jelly-track"></div>
+            <div class="cr-layer" id="runner-obstacle-track"></div>
+            <div class="cr-hero-wrap" id="runner-char-wrap">
+              <img class="cr-pet" id="runner-pet" src="assets/runner/pet.png" alt="">
+              <img class="cr-hero" id="runner-char" src="assets/runner/cookie-run-1.png" alt="쿠키 러너">
+              <div class="cr-float hidden" id="runner-dash-effect">문장 완성! 젤리 질주</div>
+              <div class="cr-float cr-float-bad hidden" id="runner-crash-effect">넘어졌어요!</div>
+            </div>
+            <img class="cr-hp-jelly hidden" id="runner-hp-jelly" src="assets/runner/jelly-heart.png" alt="">
+            <div class="cr-world-banner hidden" id="runner-world-banner">새로운 세계</div>
+            <div class="cr-ground" id="runner-ground"></div>
+          </div>
+
+          <div class="cr-novel">
+            <div class="cr-novel-head">
+              <span class="cr-novel-title" id="runner-story-title">황순원 - 소나기</span>
+              <span class="cr-novel-progress" id="runner-story-progress">1 / 8 문장</span>
+            </div>
+            <div class="cr-target" id="runner-story-target"></div>
+          </div>
+
+          <div class="cr-input-bar">
+            <input type="text" id="runner-input" class="cr-input" placeholder="글자당 1점 · 체력은 초마다 감소 · 문장을 완벽히 치면 체력 +20" autocomplete="off" spellcheck="false" aria-label="타자 러너 입력창">
           </div>
         </div>
       </div>
