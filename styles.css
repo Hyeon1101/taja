@@ -512,71 +512,7 @@ body {
   border-color: var(--primary-sky) !important;
   color: var(--primary-sky) !important;
 }
-
-/* Word Game (Falling Words Arcade) */
-.word-game-stage {
-  flex: 1;
-  background: #050714;
-  border-radius: 24px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 18px 36px rgba(124, 58, 237, 0.18);
-  border: 2px solid #7c3aed;
-}
-
-.wg-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url("assets/game/bg-space.png");
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
-}
-
-.game-hud {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  background: linear-gradient(90deg, rgba(8, 16, 40, 0.82), rgba(40, 12, 56, 0.72));
-  backdrop-filter: blur(10px);
-  color: #FFFFFF;
-  z-index: 6;
-  border-bottom: 2px solid rgba(56, 189, 248, 0.35);
-}
-
-.hud-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  font-weight: 800;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1.5px solid rgba(125, 211, 252, 0.45);
-  border-radius: 14px;
-  padding: 4px 12px;
-}
-
-.hud-value {
-  color: #7dd3fc;
-  font-family: var(--font-en);
-  font-size: 1.4rem;
-  font-weight: 900;
-  text-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
-}
-
-.lives-container {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-.wg-heart {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+/* Earth Arcade (지구오락실) Torongi Space Word Game */
 .word-game-stage {
   flex: 1;
   min-height: 0;
