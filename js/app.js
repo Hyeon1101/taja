@@ -205,21 +205,19 @@ class HancomTajaApp {
       this.highlightKey(e, false);
     });
 
-    // Word Game Input Events (IME-safe & instant auto-match)
+    // Word Game Input Events (Explicit Enter & Space submit)
     this.gameInput.addEventListener('keydown', (e) => {
       soundEngine.playKeyPress();
-      if (e.key === 'Enter' || e.key === ' ') {
+      if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space' || e.keyCode === 13 || e.keyCode === 32) {
         e.preventDefault();
         this.handleGameWordSubmit();
       }
     });
     this.gameInput.addEventListener('input', () => {
       this.highlightTargetWords();
-      this.checkWordInstantMatch();
     });
     this.gameInput.addEventListener('compositionend', () => {
       this.highlightTargetWords();
-      this.checkWordInstantMatch();
     });
 
     // Cookie Typing Runner input (IME-safe)
@@ -786,15 +784,6 @@ class HancomTajaApp {
           break;
         }
       }
-    }
-  }
-
-  checkWordInstantMatch() {
-    const inputVal = this.gameInput ? this.gameInput.value.trim() : '';
-    if (!inputVal || !this.fallingWords) return;
-    const match = this.fallingWords.find(w => !w.leaving && w.word === inputVal);
-    if (match) {
-      this.handleGameWordSubmit();
     }
   }
 
