@@ -1236,6 +1236,27 @@ class HancomTajaApp {
     }
   }
 
+  spawnJellySparkleBurst(x, y) {
+    if (!this.runnerJellyTrack) return;
+    const colors = ['#FDE047', '#F43F5E', '#38BDF8', '#A855F7', '#FFFFFF'];
+    const count = 5;
+    for (let i = 0; i < count; i++) {
+      const sp = document.createElement('div');
+      sp.className = 'cr-snack-sparkle';
+      const ang = (i / count) * 2 * Math.PI + (Math.random() * 0.4);
+      const dist = 24 + Math.random() * 22;
+      const tx = Math.cos(ang) * dist;
+      const ty = Math.sin(ang) * dist - 10;
+      sp.style.setProperty('--tx', `${tx}px`);
+      sp.style.setProperty('--ty', `${ty}px`);
+      sp.style.backgroundColor = colors[i % colors.length];
+      sp.style.left = `${x + 18}px`;
+      sp.style.top = `${y + 14}px`;
+      this.runnerJellyTrack.appendChild(sp);
+      setTimeout(() => sp.remove(), 450);
+    }
+  }
+
   updateRunnerJellies() {
     if (!this.runnerJellies) return;
     const scroll = this.runnerDashing ? 9.5 : 3.2;
@@ -1251,11 +1272,18 @@ class HancomTajaApp {
         j.el.style.top = `${j.y}px`;
       }
 
-      // Check if Gretel runs into the sweet snack on the ground
-      if (!j.eaten && !this.runnerFallen && j.x <= heroX + 35 && j.x >= heroX - 25) {
+      // Check if Gretel runs into the sweet snack on the ground (Cookie Run magnetic eating)
+      if (!j.eaten && !this.runnerFallen && j.x <= heroX + 40 && j.x >= heroX - 25) {
         j.eaten = true;
         if (j.el) {
           j.el.classList.add('is-eaten');
+          this.spawnJellySparkleBurst(j.x, j.y);
+          if (this.runnerCharWrap) {
+            this.runnerCharWrap.classList.add('is-nomming');
+            setTimeout(() => {
+              if (this.runnerCharWrap) this.runnerCharWrap.classList.remove('is-nomming');
+            }, 180);
+          }
           setTimeout(() => {
             if (j.el) j.el.remove();
           }, 380);

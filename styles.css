@@ -929,24 +929,60 @@ body {
   z-index: 6;
 }
 
-/* Sweet Snacks along Ground Lane */
+/* Cookie Run Style Sweet Snack Eating Animation */
 .cr-jelly {
   position: absolute;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.28));
-  will-change: transform;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+  will-change: transform, opacity;
 }
 
 .cr-jelly.is-eaten {
-  animation: crSnackEat 0.4s ease-out forwards;
+  animation: crCookieRunEat 0.38s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+  pointer-events: none;
 }
 
-@keyframes crSnackEat {
-  0% { opacity: 1; transform: scale(1); filter: brightness(1.5); }
-  45% { opacity: 0.95; transform: scale(1.35) translateY(-14px); filter: brightness(2) drop-shadow(0 0 12px #FDE047); }
-  100% { opacity: 0; transform: scale(0.2) translateY(-26px); }
+@keyframes crCookieRunEat {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+    filter: brightness(1.2);
+  }
+  35% {
+    opacity: 1;
+    transform: translate(-22px, -18px) scale(1.28);
+    filter: brightness(1.7) drop-shadow(0 0 16px #FDE047);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-58px, -8px) scale(0.15);
+    filter: brightness(2);
+  }
+}
+
+/* Cookie Run Star Sparkle Dust on Eating */
+.cr-snack-sparkle {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 15;
+  animation: crSparkleFly 0.45s cubic-bezier(0.12, 0.9, 0.25, 1) forwards;
+}
+
+@keyframes crSparkleFly {
+  0% {
+    transform: translate(0, 0) scale(1.6);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #FDE047);
+  }
+  100% {
+    transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(0);
+    opacity: 0;
+  }
 }
 
 .cr-hp-jelly {
@@ -962,7 +998,7 @@ body {
 }
 
 .cr-hp-jelly.is-eaten {
-  animation: crSnackEat 0.5s ease-in forwards;
+  animation: crCookieRunEat 0.5s ease-in forwards;
 }
 
 @keyframes crHpJellyIdle {
