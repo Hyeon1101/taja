@@ -672,35 +672,46 @@ body {
   box-shadow: 0 0 14px rgba(254, 240, 138, 0.8);
 }
 
+.falling-word.is-destroyed {
+  background-image: url("assets/game/explosion.png") !important;
+  animation: wgObjectDestroy 0.35s cubic-bezier(0.1, 0.9, 0.2, 1) forwards !important;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.falling-word.is-destroyed .word-badge {
+  display: none !important;
+}
+
 .falling-word.is-pop {
   background-image: url("assets/game/explosion.png") !important;
-  animation: wgBoom 0.45s cubic-bezier(0.12, 0.9, 0.25, 1) forwards;
-  z-index: 10;
+  animation: wgObjectDestroy 0.35s cubic-bezier(0.1, 0.9, 0.2, 1) forwards !important;
+  z-index: 15;
 }
 
 .falling-word.is-pop .word-badge {
-  display: none;
+  display: none !important;
 }
 
 .falling-word.is-miss {
   animation: wgMiss 0.32s ease-in forwards;
 }
 
-@keyframes wgBoom {
+@keyframes wgObjectDestroy {
   0% {
-    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(0.85);
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1);
     opacity: 1;
-    filter: brightness(1.8) drop-shadow(0 0 24px #FBBF24);
+    filter: brightness(2.2) drop-shadow(0 0 26px #FDE047);
   }
-  40% {
-    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.45);
-    opacity: 0.95;
-    filter: brightness(1.5) drop-shadow(0 0 20px #EA580C);
+  50% {
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.6);
+    opacity: 0.9;
+    filter: brightness(1.8) drop-shadow(0 0 30px #F43F5E);
   }
   100% {
-    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(1.8);
+    transform: translateY(var(--wy, 0px)) rotate(var(--rot, 0deg)) scale(2.1);
     opacity: 0;
-    filter: brightness(0.9);
+    filter: brightness(0.6);
   }
 }
 
@@ -713,54 +724,54 @@ body {
 .wg-comic-pop {
   position: absolute;
   font-family: var(--font-kr);
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: #FEF08A;
-  text-shadow: 0 0 8px #F43F5E, 0 2px 4px #000;
+  text-shadow: 0 0 10px #F43F5E, 0 2px 4px #000;
   pointer-events: none;
-  z-index: 12;
+  z-index: 16;
   animation: comicPopFloat 0.6s ease-out forwards;
 }
 
 @keyframes comicPopFloat {
-  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
-  30% { transform: translate(-50%, -80%) scale(1.3); opacity: 1; }
-  100% { transform: translate(-50%, -130%) scale(1); opacity: 0; }
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  35% { transform: translate(-50%, -85%) scale(1.4); opacity: 1; }
+  100% { transform: translate(-50%, -140%) scale(1); opacity: 0; }
 }
 
 /* Floating Score Indicator */
 .wg-score-float {
   position: absolute;
   font-family: var(--font-en);
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 900;
   color: #38BDF8;
-  text-shadow: 0 0 10px #0284C7, 0 2px 4px #000;
+  text-shadow: 0 0 12px #0284C7, 0 2px 4px #000;
   pointer-events: none;
-  z-index: 12;
+  z-index: 16;
   animation: scoreFloatUp 0.65s ease-out forwards;
 }
 
 @keyframes scoreFloatUp {
-  0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
-  40% { transform: translate(-50%, -90%) scale(1.2); opacity: 1; }
-  100% { transform: translate(-50%, -150%) scale(1); opacity: 0; }
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+  40% { transform: translate(-50%, -90%) scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%, -160%) scale(1); opacity: 0; }
 }
 
 /* Explosion Spark Particles */
 .wg-spark {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 11;
+  z-index: 15;
   animation: sparkFly 0.55s cubic-bezier(0.1, 0.85, 0.25, 1) forwards;
 }
 
 @keyframes sparkFly {
   0% {
-    transform: translate(0, 0) scale(1.4);
+    transform: translate(0, 0) scale(1.5);
     opacity: 1;
   }
   100% {
@@ -769,83 +780,149 @@ body {
   }
 }
 
-/* Torongi Player Spaceship Area */
-.wg-player-area {
+/* =========================================
+   Integrated Torongi Spaceship Cockpit Console
+   ========================================= */
+.wg-cockpit-console {
   position: relative;
-  height: 88px;
+  width: 100%;
+  padding: 0 20px 14px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  z-index: 7;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.wg-pilot-torongi {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  margin-bottom: -28px;
+  z-index: 12;
+  animation: torongiCockpitFloat 2.4s ease-in-out infinite;
   pointer-events: none;
 }
 
-.wg-torongi-wrap {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  animation: torongiHover 2.2s ease-in-out infinite;
-}
-
-.wg-torongi-ship {
+.wg-pilot-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(34, 211, 238, 0.45));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 14px rgba(56, 189, 248, 0.6));
   transition: transform 0.1s ease;
 }
 
-.wg-torongi-wrap.is-shooting .wg-torongi-ship {
+.wg-cockpit-console.is-shooting .wg-pilot-img {
   animation: torongiRecoil 0.25s ease-out;
 }
 
-@keyframes torongiHover {
+.wg-cannon-nozzle {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 0%, #38BDF8 50%, #F43F5E 100%);
+  box-shadow: 0 0 12px #38BDF8;
+  opacity: 0.8;
+}
+
+.wg-cockpit-console.is-shooting .wg-cannon-nozzle {
+  animation: muzzleFlash 0.25s ease-out;
+}
+
+@keyframes muzzleFlash {
+  0% { transform: translateX(-50%) scale(1); opacity: 1; filter: brightness(2); }
+  40% { transform: translateX(-50%) scale(3.5); opacity: 1; box-shadow: 0 0 30px #F43F5E; }
+  100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+}
+
+@keyframes torongiCockpitFloat {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes torongiRecoil {
   0% { transform: translateY(0) scale(1); }
-  35% { transform: translateY(8px) scale(0.92, 1.08); }
+  35% { transform: translateY(6px) scale(0.92, 1.08); }
   100% { transform: translateY(0) scale(1); }
 }
 
-.game-input-container {
-  padding: 14px 24px 16px;
-  background: rgba(4, 10, 24, 0.92);
-  backdrop-filter: blur(12px);
+.wg-ship-hull {
+  position: relative;
+  max-width: 580px;
+  width: 100%;
+  background: linear-gradient(180deg, #1E1B4B 0%, #0F172A 100%);
+  border: 3px solid #38BDF8;
+  border-radius: 28px;
+  padding: 10px 18px 12px;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.4), inset 0 0 18px rgba(30, 27, 75, 0.8);
   display: flex;
-  justify-content: center;
-  z-index: 6;
-  border-top: 2px solid rgba(56, 189, 248, 0.45);
-  box-shadow: 0 -8px 24px rgba(6, 182, 212, 0.18);
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 11;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.game-input-box {
-  max-width: 520px;
+.wg-cockpit-console.is-aiming .wg-ship-hull {
+  border-color: #F43F5E;
+  box-shadow: 0 0 28px rgba(244, 63, 94, 0.6), inset 0 0 18px rgba(225, 29, 72, 0.35);
+}
+
+.wg-hull-thrusters {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.thruster-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FDE047;
+  box-shadow: 0 0 8px #FDE047;
+  animation: thrusterPulse 1.2s ease-in-out infinite alternate;
+}
+
+.thruster-dot:nth-child(2) { animation-delay: 0.2s; background: #38BDF8; box-shadow: 0 0 8px #38BDF8; }
+.thruster-dot:nth-child(3) { animation-delay: 0.4s; background: #F43F5E; box-shadow: 0 0 8px #F43F5E; }
+.thruster-dot:nth-child(4) { animation-delay: 0.6s; background: #FDE047; box-shadow: 0 0 8px #FDE047; }
+
+@keyframes thrusterPulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+.wg-ship-input {
   width: 100%;
-  padding: 14px 24px;
-  font-size: 1.25rem;
+  padding: 12px 20px;
+  font-size: 1.28rem;
   font-family: var(--font-kr);
-  border: 2px solid #38bdf8;
-  border-radius: 18px;
-  background-color: rgba(2, 8, 22, 0.92);
-  color: #e0f2fe;
+  font-weight: 800;
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.92);
+  color: #FFFFFF;
   text-align: center;
   outline: none;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.35), inset 0 0 18px rgba(8, 47, 73, 0.45);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7);
+  transition: all 0.2s ease;
 }
 
-.game-input-box::placeholder {
-  color: rgba(125, 211, 252, 0.65);
-  font-size: 0.9rem;
+.wg-ship-input:focus {
+  border-color: #38BDF8;
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.5), inset 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.wg-ship-input::placeholder {
+  color: rgba(148, 163, 184, 0.65);
+  font-size: 0.95rem;
   font-weight: 600;
-}
-
-.game-input-box:focus {
-  border-color: #67e8f9;
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.65), inset 0 0 16px rgba(8, 47, 73, 0.4);
 }
 
 /* =========================================

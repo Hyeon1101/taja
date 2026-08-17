@@ -94,7 +94,9 @@ class HancomTajaApp {
     this.fallingArea = document.getElementById('falling-area');
     this.gameInput = document.getElementById('game-input');
     this.wordLaserCanvas = document.getElementById('word-laser-canvas');
-    this.torongiWrap = document.getElementById('torongi-wrap');
+    this.torongiConsole = document.getElementById('torongi-console');
+    this.torongiPilot = document.getElementById('torongi-pilot');
+    this.torongiCannon = document.getElementById('torongi-cannon');
     this.torongiShip = document.getElementById('torongi-ship');
     this.laserCtx = this.wordLaserCanvas ? this.wordLaserCanvas.getContext('2d') : null;
 
@@ -203,7 +205,7 @@ class HancomTajaApp {
       this.highlightKey(e, false);
     });
 
-    // Word Game Input Event
+    // Word Game Input Events (IME-safe & instant auto-match)
     this.gameInput.addEventListener('keydown', (e) => {
       soundEngine.playKeyPress();
       if (e.key === 'Enter' || e.key === ' ') {
@@ -211,7 +213,14 @@ class HancomTajaApp {
         this.handleGameWordSubmit();
       }
     });
-    this.gameInput.addEventListener('input', () => this.highlightTargetWords());
+    this.gameInput.addEventListener('input', () => {
+      this.highlightTargetWords();
+      this.checkWordInstantMatch();
+    });
+    this.gameInput.addEventListener('compositionend', () => {
+      this.highlightTargetWords();
+      this.checkWordInstantMatch();
+    });
 
     // Cookie Typing Runner input (IME-safe)
     if (this.runnerInput) {
@@ -780,31 +789,41 @@ class HancomTajaApp {
     }
   }
 
+  checkWordInstantMatch() {
+    const inputVal = this.gameInput ? this.gameInput.value.trim() : '';
+    if (!inputVal || !this.fallingWords) return;
+    const match = this.fallingWords.find(w => !w.leaving && w.word === inputVal);
+    if (match) {
+      this.handleGameWordSubmit();
+    }
+  }
+
   handleGameWordSubmit() {
-    const inputVal = this.gameInput.value.trim();
+    const inputVal = this.gameInput ? this.gameInput.value.trim() : '';
     if (!inputVal) return;
 
     let matched = false;
     for (let i = 0; i < this.fallingWords.length; i++) {
-      if (this.fallingWords[i].word === inputVal) {
-        const hit = this.fallingWords[i];
+      const hit = this.fallingWords[i];
+      if (!hit.leaving && hit.word === inputVal) {
         hit.leaving = true;
+        this.fallingWords.splice(i, 1);
+
         hit.el.style.setProperty('--wy', `${hit.y}px`);
         hit.el.style.setProperty('--rot', `${hit.rot}deg`);
+        hit.el.classList.add('is-destroyed');
 
-        // Torongi fires high-power laser beam!
+        // Instant Laser from Spaceship Cannon
         this.fireLaserAtTarget(hit);
+        soundEngine.playExplosion();
+
+        this.spawnComicPop(hit.x, hit.y);
+        this.spawnFloatingScore(hit.x, hit.y, 100);
+        this.spawnExplosionSparks(hit.x, hit.y);
 
         setTimeout(() => {
-          soundEngine.playExplosion();
-          hit.el.classList.add('is-pop');
-          this.spawnComicPop(hit.x, hit.y);
-          this.spawnFloatingScore(hit.x, hit.y, 100);
-          this.spawnExplosionSparks(hit.x, hit.y);
-          setTimeout(() => { if (hit.el) hit.el.remove(); }, 450);
-        }, 60);
-
-        this.fallingWords.splice(i, 1);
+          if (hit.el && hit.el.parentNode) hit.el.remove();
+        }, 340);
 
         this.gameScore += 100;
         this.correctStrokes += inputVal.length * 2;
@@ -839,17 +858,17 @@ class HancomTajaApp {
     if (!this.laserCtx) this.laserCtx = this.wordLaserCanvas.getContext('2d');
     if (!this.laserCtx) return;
 
-    // Torongi cannon position at bottom center
+    // Torongi cannon position on spaceship console
     const cannonX = areaRect.width / 2;
-    const cannonY = areaRect.height;
+    const cannonY = areaRect.height - 18;
     const targetX = hit.x + 42;
     const targetY = hit.y + 42;
 
     // Torongi Recoil & Shoot animation
-    if (this.torongiWrap) {
-      this.torongiWrap.classList.remove('is-shooting');
-      void this.torongiWrap.offsetWidth;
-      this.torongiWrap.classList.add('is-shooting');
+    if (this.torongiConsole) {
+      this.torongiConsole.classList.remove('is-shooting');
+      void this.torongiConsole.offsetWidth;
+      this.torongiConsole.classList.add('is-shooting');
     }
     if (this.torongiShip) {
       this.torongiShip.src = 'assets/game/torongi-shoot.png';
@@ -873,11 +892,11 @@ class HancomTajaApp {
 
       ctx.save();
       // Outer Neon Pink Aura
-      ctx.strokeStyle = `rgba(244, 63, 94, ${alpha * 0.8})`;
-      ctx.lineWidth = 16 * alpha;
+      ctx.strokeStyle = `rgba(244, 63, 94, ${alpha * 0.85})`;
+      ctx.lineWidth = 18 * alpha;
       ctx.lineCap = 'round';
       ctx.shadowColor = '#F43F5E';
-      ctx.shadowBlur = 20;
+      ctx.shadowBlur = 24;
       ctx.beginPath();
       ctx.moveTo(cannonX, cannonY);
       ctx.lineTo(targetX, targetY);
@@ -885,9 +904,9 @@ class HancomTajaApp {
 
       // Electric Cyan Middle Beam
       ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.95})`;
-      ctx.lineWidth = 8 * alpha;
+      ctx.lineWidth = 9 * alpha;
       ctx.shadowColor = '#38BDF8';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 14;
       ctx.beginPath();
       ctx.moveTo(cannonX, cannonY);
       ctx.lineTo(targetX, targetY);
@@ -953,6 +972,9 @@ class HancomTajaApp {
 
   highlightTargetWords() {
     const v = this.gameInput ? this.gameInput.value.trim() : '';
+    if (this.torongiConsole) {
+      this.torongiConsole.classList.toggle('is-aiming', v.length > 0);
+    }
     if (!this.fallingWords) return;
     this.fallingWords.forEach((w) => {
       if (!w.el || w.leaving) return;

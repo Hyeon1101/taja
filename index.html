@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 
@@ -342,14 +342,21 @@
             <!-- Falling space objects with words spawned dynamically -->
           </div>
 
-          <div class="wg-player-area" id="word-player-area">
-            <div class="wg-torongi-wrap" id="torongi-wrap">
-              <img class="wg-torongi-ship" id="torongi-ship" src="assets/game/torongi-ship.png" alt="토롱이 우주선">
+          <!-- Integrated Torongi Spaceship Input Console -->
+          <div class="wg-cockpit-console" id="torongi-console">
+            <div class="wg-pilot-torongi" id="torongi-pilot">
+              <img class="wg-pilot-img" id="torongi-ship" src="assets/game/torongi-ship.png" alt="토롱이 조종사">
+              <div class="wg-cannon-nozzle" id="torongi-cannon"></div>
             </div>
-          </div>
-
-          <div class="game-input-container">
-            <input type="text" id="game-input" class="game-input-box" placeholder="우주선과 행성의 낱말을 치면 토롱이가 광선 발사!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
+            <div class="wg-ship-hull">
+              <div class="wg-hull-thrusters">
+                <span class="thruster-dot"></span>
+                <span class="thruster-dot"></span>
+                <span class="thruster-dot"></span>
+                <span class="thruster-dot"></span>
+              </div>
+              <input type="text" id="game-input" class="wg-ship-input" placeholder="우주선 · 행성의 낱말을 입력하면 토롱이가 광선 발사!" autocomplete="off" aria-label="낱말 게임 단어 입력창">
+            </div>
           </div>
         </div>
       </div>
