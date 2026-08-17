@@ -205,19 +205,37 @@ class HancomTajaApp {
       this.highlightKey(e, false);
     });
 
-    // Word Game Input Events (Explicit Enter & Space submit)
+    // Word Game Input Events (Explicit Enter & Space submit + IME-safe clearing)
+    this.gameJustSubmitted = false;
     this.gameInput.addEventListener('keydown', (e) => {
       soundEngine.playKeyPress();
       if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space' || e.keyCode === 13 || e.keyCode === 32) {
         e.preventDefault();
+        this.gameJustSubmitted = true;
         this.handleGameWordSubmit();
       }
     });
-    this.gameInput.addEventListener('input', () => {
-      this.highlightTargetWords();
+    this.gameInput.addEventListener('keyup', (e) => {
+      if (this.gameJustSubmitted || e.key === 'Enter' || e.keyCode === 13) {
+        this.clearGameInput();
+        this.gameJustSubmitted = false;
+      }
     });
     this.gameInput.addEventListener('compositionend', () => {
-      this.highlightTargetWords();
+      if (this.gameJustSubmitted) {
+        this.clearGameInput();
+        this.gameJustSubmitted = false;
+      } else {
+        this.highlightTargetWords();
+      }
+    });
+    this.gameInput.addEventListener('input', () => {
+      if (this.gameJustSubmitted) {
+        this.clearGameInput();
+        this.gameJustSubmitted = false;
+      } else {
+        this.highlightTargetWords();
+      }
     });
 
     // Cookie Typing Runner input (IME-safe)
@@ -787,6 +805,30 @@ class HancomTajaApp {
     }
   }
 
+  clearGameInput() {
+    if (!this.gameInput) return;
+    this.gameInput.value = '';
+    // Multi-pass clear to purge asynchronous Korean IME composition buffers
+    requestAnimationFrame(() => {
+      if (this.gameInput) {
+        this.gameInput.value = '';
+        this.highlightTargetWords();
+      }
+    });
+    setTimeout(() => {
+      if (this.gameInput) {
+        this.gameInput.value = '';
+        this.highlightTargetWords();
+      }
+    }, 0);
+    setTimeout(() => {
+      if (this.gameInput) {
+        this.gameInput.value = '';
+        this.highlightTargetWords();
+      }
+    }, 30);
+  }
+
   handleGameWordSubmit() {
     const inputVal = this.gameInput ? this.gameInput.value.trim() : '';
     if (!inputVal) return;
@@ -833,8 +875,7 @@ class HancomTajaApp {
       this.errorCount++;
     }
 
-    this.gameInput.value = '';
-    this.highlightTargetWords();
+    this.clearGameInput();
     this.updateGameHud();
     this.updateStatsDisplay();
   }
