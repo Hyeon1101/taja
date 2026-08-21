@@ -46,13 +46,16 @@ class HancomTajaApp {
     ];
     this.cookieFrame = 0;
     this.runnerWorlds = [
-      { src: 'assets/runner/bg-forest.jpg?v=4', name: '1. 숲속', accent: '#22C55E' },
-      { src: 'assets/runner/bg-candyhouse.jpg?v=4', name: '2. 과자집', accent: '#F43F5E' },
-      { src: 'assets/runner/bg-witchkitchen.jpg?v=4', name: '3. 마녀의 주방', accent: '#A855F7' },
-      { src: 'assets/runner/bg-escape.jpg?v=4', name: '4. 과자집 탈출', accent: '#FDE047' }
+      { src: 'assets/runner/bg-forest.jpg', name: '1. 신비한 숲속', accent: '#22C55E' },
+      { src: 'assets/runner/bg-candyhouse.jpg', name: '2. 달콤한 과자나라', accent: '#F43F5E' },
+      { src: 'assets/runner/bg-witchkitchen.jpg', name: '3. 마녀의 오두막', accent: '#A855F7' },
+      { src: 'assets/runner/bg-korean-village.jpg', name: '4. 1970년대 시골길', accent: '#F59E0B' }
     ];
     this.runnerStageIndex = 0;
     this.runnerWorldChanging = false;
+    this.witchDistance = -130;
+    this.targetWitchDistance = -130;
+    this.isEnteringHouse = false;
 
     this.initElements();
     this.bindEvents();
@@ -125,6 +128,13 @@ class HancomTajaApp {
     this.runnerStoryProgress = document.getElementById('runner-story-progress');
     this.runnerStoryTarget = document.getElementById('runner-story-target');
     this.runnerInput = document.getElementById('runner-input');
+
+    // Hansel & Gretel Extras (Witch, Eat Bubble, Goal Haven)
+    this.runnerWitchWrap = document.getElementById('runner-witch-wrap');
+    this.runnerWitch = document.getElementById('runner-witch');
+    this.witchTaunt = document.getElementById('witch-taunt');
+    this.runnerGoalHouse = document.getElementById('runner-goal-house');
+    this.runnerEatBubble = document.getElementById('runner-eat-bubble');
 
     // Modal UI
     this.resultModal = document.getElementById('result-modal');
@@ -338,11 +348,12 @@ class HancomTajaApp {
       this.startRunnerGame();
     } else {
       this.textStage.classList.remove('hidden');
+      this.textStage.classList.toggle('is-literature-theme', mode === 'long' || mode === 'short');
       this.gameStage.classList.add('hidden');
       if (this.runnerStage) this.runnerStage.classList.add('hidden');
 
       if (mode === 'short') {
-        this.populateCategorySelect(['속담 및 명언']);
+        this.populateCategorySelect(['1970년대 한국 속담 및 명언']);
         this.startShortPractice();
       } else { // long
         const articleTitles = TAJA_TEXTS.long.map(a => a.title);
@@ -741,10 +752,22 @@ class HancomTajaApp {
     const areaWidth = Math.max(200, clientW - 120);
     const posX = Math.floor(Math.random() * areaWidth) + 16;
 
-    const skins = ['skin-ufo', 'skin-rocket', 'skin-moon', 'skin-planet', 'skin-capsule', 'skin-dpad'];
-    const selectedSkin = skins[Math.floor(Math.random() * skins.length)];
     const el = document.createElement('div');
-    el.className = 'falling-word ' + selectedSkin;
+    el.className = 'falling-word';
+
+    const imageFile = (TAJA_TEXTS.wordImageMap && TAJA_TEXTS.wordImageMap[randomWord]) || null;
+    if (imageFile) {
+      const img = document.createElement('img');
+      img.className = 'word-icon-img';
+      img.src = `assets/game/${imageFile}`;
+      img.alt = randomWord;
+      img.onerror = () => { img.style.display = 'none'; };
+      el.appendChild(img);
+    } else {
+      const skins = ['skin-ufo', 'skin-rocket', 'skin-moon', 'skin-planet', 'skin-capsule', 'skin-dpad'];
+      const selectedSkin = skins[Math.floor(Math.random() * skins.length)];
+      el.classList.add(selectedSkin);
+    }
 
     const badge = document.createElement('span');
     badge.className = 'word-badge';
@@ -759,8 +782,8 @@ class HancomTajaApp {
       x: posX,
       y: 0,
       speed: 1.1 + (this.gameLevel * 0.35),
-      rot: (Math.random() * 24 - 12),
-      spin: (Math.random() * 0.25 + 0.05) * (Math.random() < 0.5 ? 1 : -1)
+      rot: (Math.random() * 16 - 8),
+      spin: (Math.random() * 0.15 + 0.02) * (Math.random() < 0.5 ? 1 : -1)
     };
     el.style.transform = `translateY(0px) rotate(${wordObj.rot}deg)`;
 
@@ -772,8 +795,8 @@ class HancomTajaApp {
 
   updateWordPositions() {
     if (this.isGameOver || !this.fallingArea) return;
-    const clientH = (this.fallingArea.clientHeight > 100) ? this.fallingArea.clientHeight : 500;
-    const maxHeight = clientH - 92;
+    const clientH = (this.fallingArea.clientHeight > 100) ? this.fallingArea.clientHeight : 560;
+    const maxHeight = clientH - 30;
 
     for (let i = this.fallingWords.length - 1; i >= 0; i--) {
       const w = this.fallingWords[i];
@@ -888,30 +911,29 @@ class HancomTajaApp {
     if (!this.laserCtx) this.laserCtx = this.wordLaserCanvas.getContext('2d');
     if (!this.laserCtx) return;
 
-    // Torongi cannon position on spaceship console
-    const cannonX = areaRect.width / 2;
-    const cannonY = areaRect.height - 18;
-    const targetX = hit.x + 42;
-    const targetY = hit.y + 42;
+    // Dual Plasma Cannons on Left & Right Wings of the spaceship console
+    const centerX = areaRect.width / 2;
+    const cannonY = areaRect.height - 35;
+    const leftCannonX = Math.max(30, centerX - 260);
+    const rightCannonX = Math.min(areaRect.width - 30, centerX + 260);
+    const targetX = hit.x + 48;
+    const targetY = hit.y + 48;
 
-    // Torongi Recoil & Shoot animation
+    // Spaceship recoil & turret muzzle flash animation
     if (this.torongiConsole) {
       this.torongiConsole.classList.remove('is-shooting');
       void this.torongiConsole.offsetWidth;
       this.torongiConsole.classList.add('is-shooting');
-    }
-    if (this.torongiShip) {
-      this.torongiShip.src = 'assets/game/torongi-shoot.png';
       setTimeout(() => {
-        if (this.torongiShip) this.torongiShip.src = 'assets/game/torongi-ship.png';
-      }, 240);
+        if (this.torongiConsole) this.torongiConsole.classList.remove('is-shooting');
+      }, 300);
     }
 
     soundEngine.playLaser();
 
-    // High Voltage Multi-layered Laser Beam
+    // High Voltage Dual Converging Laser Beams
     let frame = 0;
-    const maxFrames = 10;
+    const maxFrames = 12;
     const drawBeam = () => {
       if (!this.laserCtx || !this.wordLaserCanvas) return;
       this.laserCtx.clearRect(0, 0, this.wordLaserCanvas.width, this.wordLaserCanvas.height);
@@ -921,34 +943,39 @@ class HancomTajaApp {
       const ctx = this.laserCtx;
 
       ctx.save();
-      // Outer Neon Pink Aura
-      ctx.strokeStyle = `rgba(244, 63, 94, ${alpha * 0.85})`;
-      ctx.lineWidth = 18 * alpha;
-      ctx.lineCap = 'round';
-      ctx.shadowColor = '#F43F5E';
-      ctx.shadowBlur = 24;
-      ctx.beginPath();
-      ctx.moveTo(cannonX, cannonY);
-      ctx.lineTo(targetX, targetY);
-      ctx.stroke();
+      const cannons = [leftCannonX, rightCannonX];
 
-      // Electric Cyan Middle Beam
-      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.95})`;
-      ctx.lineWidth = 9 * alpha;
-      ctx.shadowColor = '#38BDF8';
-      ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.moveTo(cannonX, cannonY);
-      ctx.lineTo(targetX, targetY);
-      ctx.stroke();
+      cannons.forEach(cx => {
+        // Outer Neon Plasma Aura
+        ctx.strokeStyle = `rgba(244, 63, 94, ${alpha * 0.85})`;
+        ctx.lineWidth = 16 * alpha;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = '#F43F5E';
+        ctx.shadowBlur = 24;
+        ctx.beginPath();
+        ctx.moveTo(cx, cannonY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
 
-      // Core White Hot Ray
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-      ctx.lineWidth = 4 * alpha;
-      ctx.beginPath();
-      ctx.moveTo(cannonX, cannonY);
-      ctx.lineTo(targetX, targetY);
-      ctx.stroke();
+        // Electric Cyan Middle Beam
+        ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.95})`;
+        ctx.lineWidth = 8 * alpha;
+        ctx.shadowColor = '#38BDF8';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.moveTo(cx, cannonY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
+
+        // Core White Hot Ray
+        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.lineWidth = 3.5 * alpha;
+        ctx.beginPath();
+        ctx.moveTo(cx, cannonY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
+      });
+
       ctx.restore();
 
       frame++;
@@ -1046,7 +1073,7 @@ class HancomTajaApp {
     this.resultModal.classList.remove('hidden');
   }
 
-  // --- MODE 4: COOKIE TYPING RUNNER (right-facing, sentence dash, IME-safe) ---
+  // --- MODE 4: COOKIE TYPING RUNNER (Hansel & Gretel with Witch Pursuit & Candy House Goal) ---
   startRunnerGame() {
     this.stopRunnerGameLoop();
 
@@ -1060,6 +1087,7 @@ class HancomTajaApp {
     this.runnerCombo = 0;
     this.runnerMaxCombo = 0;
     this.isGameOver = false;
+    this.isEnteringHouse = false;
     this.runnerJellies = [];
     this.runnerObstacles = [];
     this.lastCorrectLen = 0;
@@ -1074,11 +1102,16 @@ class HancomTajaApp {
     this.cookieFrameAcc = 0;
     this.lastFrameTs = 0;
     this.distAcc = 0;
+    this.witchDistance = -140;
+    this.targetWitchDistance = -140;
+    this.lastRunnerTypeTs = 0;
+    this.isRunnerTyping = false;
+    this.eatAnimationTimer = null;
 
     if (this.runnerJellyTrack) this.runnerJellyTrack.innerHTML = '';
     if (this.runnerObstacleTrack) this.runnerObstacleTrack.innerHTML = '';
     if (this.runnerCharWrap) {
-      this.runnerCharWrap.classList.remove('is-dashing', 'is-hit', 'is-fallen', 'is-getting-up', 'is-world-exit', 'is-world-enter', 'is-world-arrive');
+      this.runnerCharWrap.className = 'cr-hero-wrap is-idle';
       this.runnerCharWrap.style.transform = '';
     }
     if (this.runnerWorld) this.runnerWorld.classList.remove('is-dashing', 'is-hurt');
@@ -1086,7 +1119,18 @@ class HancomTajaApp {
       this.runnerHpJelly.classList.add('hidden');
       this.runnerHpJelly.classList.remove('is-eaten');
     }
-    if (this.runnerChar) this.runnerChar.src = this.cookieFrames[0];
+    if (this.runnerGoalHouse) {
+      this.runnerGoalHouse.classList.add('hidden');
+      this.runnerGoalHouse.classList.remove('is-visible');
+    }
+    if (this.runnerWitchWrap) {
+      this.runnerWitchWrap.style.left = '-140px';
+    }
+    if (this.witchTaunt) {
+      this.witchTaunt.classList.add('hidden');
+    }
+
+    if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-idle.png';
     this.applyRunnerWorld(0, false);
 
     this.updateRunnerHP(100);
@@ -1109,7 +1153,7 @@ class HancomTajaApp {
     this.stopRunnerGameLoop(false);
 
     this.runnerHpDrainTimer = setInterval(() => {
-      if (this.isGameOver || this.currentMode !== 'runner' || this.runnerWorldChanging) return;
+      if (this.isGameOver || this.currentMode !== 'runner' || this.runnerWorldChanging || this.isEnteringHouse) return;
       this.runnerHP -= this.getRunnerHpDrain();
       this.updateRunnerHP(this.runnerHP);
       if (this.runnerHP <= 0) this.runnerGameOver();
@@ -1140,25 +1184,111 @@ class HancomTajaApp {
     if (stopBgm) soundEngine.stopRunnerBgm();
   }
 
+  spawnGretelHeadSparkleBurst() {
+    const container = document.getElementById('runner-sparkle-container');
+    if (!container) return;
+    const sparkles = ['✨', '⭐', '🌟', '💛', '✨'];
+    for (let i = 0; i < 4; i++) {
+      const star = document.createElement('span');
+      star.className = 'runner-sparkle-star';
+      star.textContent = sparkles[i % sparkles.length];
+      const ang = (i / 4) * Math.PI + (Math.random() * 0.4 - 0.2);
+      const dist = 26 + Math.random() * 24;
+      const tx = Math.cos(ang) * dist;
+      const ty = -Math.sin(ang) * dist - 8;
+      star.style.setProperty('--tx', `${tx}px`);
+      star.style.setProperty('--ty', `${ty}px`);
+      container.appendChild(star);
+      setTimeout(() => star.remove(), 550);
+    }
+  }
+
+  triggerGretelEatMotion() {
+    if (this.runnerFallen || this.isEnteringHouse || this.isGameOver) return;
+    if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-eat.png';
+    if (this.runnerCharWrap) {
+      this.runnerCharWrap.classList.remove('is-idle');
+      this.runnerCharWrap.classList.add('is-running', 'is-eating');
+    }
+    this.spawnGretelHeadSparkleBurst();
+
+    if (this.eatAnimationTimer) clearTimeout(this.eatAnimationTimer);
+    this.eatAnimationTimer = setTimeout(() => {
+      if (this.runnerCharWrap) this.runnerCharWrap.classList.remove('is-eating');
+      if (this.isRunnerTyping && !this.runnerFallen && !this.isEnteringHouse) {
+        if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-run-1.png';
+      } else if (!this.runnerFallen && !this.isEnteringHouse) {
+        if (this.runnerCharWrap) {
+          this.runnerCharWrap.classList.remove('is-running');
+          this.runnerCharWrap.classList.add('is-idle');
+        }
+        if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-idle.png';
+      }
+    }, 360);
+  }
+
   stepRunnerWorld(dt) {
-    this.distAcc += dt;
-    if (this.distAcc >= 180) {
-      this.distAcc = 0;
-      if (!this.runnerFallen) {
+    const isTypingActive = !this.runnerFallen && !this.isEnteringHouse && (Date.now() - this.lastRunnerTypeTs < 900);
+    this.isRunnerTyping = isTypingActive;
+
+    // Idle vs Running character state update
+    if (!this.runnerFallen && !this.isEnteringHouse) {
+      if (!isTypingActive) {
+        if (this.runnerWorld) {
+          this.runnerWorld.classList.remove('is-running');
+          this.runnerWorld.classList.add('is-idle');
+        }
+        if (this.runnerCharWrap && !this.runnerCharWrap.classList.contains('is-idle')) {
+          this.runnerCharWrap.classList.remove('is-running', 'is-dashing', 'is-eating');
+          this.runnerCharWrap.classList.add('is-idle');
+          if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-idle.png';
+        }
+      } else {
+        if (this.runnerWorld) {
+          this.runnerWorld.classList.add('is-running');
+          this.runnerWorld.classList.remove('is-idle');
+        }
+        if (this.runnerCharWrap && this.runnerCharWrap.classList.contains('is-idle')) {
+          this.runnerCharWrap.classList.remove('is-idle');
+          this.runnerCharWrap.classList.add('is-running');
+          if (this.runnerChar && !this.runnerCharWrap.classList.contains('is-eating')) {
+            this.runnerChar.src = 'assets/runner/gretel-run-1.png';
+          }
+        }
+      }
+    }
+
+    if (isTypingActive) {
+      this.distAcc += dt;
+      if (this.distAcc >= 160) {
+        this.distAcc = 0;
         this.runnerDistance += this.runnerDashing ? 3 : 1;
         this.updateRunnerHud();
       }
     }
 
-    this.cookieFrameAcc += dt;
-    const frameMs = this.runnerDashing ? 55 : 90;
-    if (this.cookieFrameAcc >= frameMs && !this.runnerFallen && Date.now() > this.runnerHitUntil) {
-      this.cookieFrameAcc = 0;
-      this.cookieFrame = (this.cookieFrame + 1) % this.cookieFrames.length;
-      if (this.runnerChar) this.runnerChar.src = this.cookieFrames[this.cookieFrame];
+    // Witch pursuit distance calculations
+    if (this.runnerWitchWrap && !this.isEnteringHouse && !this.isGameOver) {
+      if (this.runnerFallen || this.runnerHP < 35 || this.runnerTypoLatched || !isTypingActive) {
+        // Witch approaches when fallen, low HP, typo, or idle
+        this.targetWitchDistance = Math.min(20, this.targetWitchDistance + dt * 0.075);
+      } else {
+        // Witch gets pushed back when running smoothly
+        this.targetWitchDistance = Math.max(-150, this.targetWitchDistance - dt * 0.045);
+      }
+      this.witchDistance += (this.targetWitchDistance - this.witchDistance) * 0.08;
+      this.runnerWitchWrap.style.left = `${85 + this.witchDistance}px`;
+
+      if (this.witchDistance > -45) {
+        if (this.witchTaunt) this.witchTaunt.classList.remove('hidden');
+        if (this.runnerWorld) this.runnerWorld.classList.add('is-hurt');
+      } else {
+        if (this.witchTaunt) this.witchTaunt.classList.add('hidden');
+        if (this.runnerWorld && this.runnerHP >= 30) this.runnerWorld.classList.remove('is-hurt');
+      }
     }
 
-    this.updateRunnerJellies();
+    this.updateRunnerJellies(isTypingActive);
   }
 
   renderRunnerTargetLine() {
@@ -1235,7 +1365,7 @@ class HancomTajaApp {
   }
 
   handleRunnerTypingInput(e) {
-    if (this.isGameOver || !this.currentNovel || !this.runnerInput) return;
+    if (this.isGameOver || !this.currentNovel || !this.runnerInput || this.isEnteringHouse) return;
 
     const targetLine = this.currentNovel.lines[this.runnerLineIndex] || '';
     const currentInput = this.runnerInput.value;
@@ -1266,8 +1396,20 @@ class HancomTajaApp {
       return;
     }
 
+    this.lastRunnerTypeTs = Date.now();
+    this.isRunnerTyping = true;
     this.setRunnerFallen(false);
     this.runnerTypoLatched = false;
+
+    // While typing, maintain Running Mode (eating mode is triggered only upon reaching snacks)
+    if (this.runnerCharWrap && !this.runnerCharWrap.classList.contains('is-eating')) {
+      this.runnerCharWrap.classList.remove('is-idle');
+      this.runnerCharWrap.classList.add('is-running');
+      if (this.runnerChar && !this.runnerChar.src.includes('gretel-run-1.png')) {
+        this.runnerChar.src = 'assets/runner/gretel-run-1.png';
+      }
+    }
+
     const committed = this.getCommittedCorrectLen(currentInput, targetLine);
     if (committed > this.lastCorrectLen) {
       const gained = committed - this.lastCorrectLen;
@@ -1287,13 +1429,20 @@ class HancomTajaApp {
   }
 
   handleRunnerLineSubmit() {
-    if (this.isGameOver || !this.currentNovel || !this.runnerInput) return;
+    if (this.isGameOver || !this.currentNovel || !this.runnerInput || this.isEnteringHouse) return;
 
     const targetLine = this.currentNovel.lines[this.runnerLineIndex] || '';
     const typed = this.runnerInput.value;
     if (typed !== targetLine) return;
 
     soundEngine.playCompleteLine();
+
+    // Check if this completes the entire chapter/novel
+    if (this.runnerLineIndex >= this.currentNovel.lines.length - 1) {
+      this.triggerCandyHouseFinish();
+      return;
+    }
+
     if (!this.runnerWorldChanging) this.beginJellyDash();
 
     this.runnerHP = Math.min(100, this.runnerHP + 20);
@@ -1304,22 +1453,67 @@ class HancomTajaApp {
     if (this.runnerCombo > this.runnerMaxCombo) this.runnerMaxCombo = this.runnerCombo;
     this.runnerDistance += 40;
 
+    // Fling witch far back on line completion
+    this.targetWitchDistance = -160;
+
     if (this.runnerDashEffect) {
-      this.runnerDashEffect.textContent = '문장 완성! 체력 +20';
+      this.runnerDashEffect.textContent = '문장 완성! 폭풍 대시 ⚡ 체력 +20';
       this.runnerDashEffect.classList.remove('hidden');
       setTimeout(() => {
         if (this.runnerDashEffect) this.runnerDashEffect.classList.add('hidden');
-      }, 900);
+      }, 950);
     }
 
     this.runnerLineIndex++;
-    if (this.runnerLineIndex >= this.currentNovel.lines.length) {
-      this.runnerLineIndex = 0;
-    }
-
     this.runnerInput.value = '';
     this.renderRunnerTargetLine();
     this.updateRunnerHud();
+  }
+
+  triggerCandyHouseFinish() {
+    if (this.isEnteringHouse || this.isGameOver) return;
+    this.isEnteringHouse = true;
+    this.stopRunnerGameLoop(false);
+
+    soundEngine.playCompleteLine();
+    this.runnerDistance += 120;
+    this.runnerScore += 300;
+    this.updateRunnerHud();
+
+    // Show Candy House Goal Sanctuary
+    if (this.runnerGoalHouse) {
+      this.runnerGoalHouse.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        if (this.runnerGoalHouse) this.runnerGoalHouse.classList.add('is-visible');
+      });
+    }
+
+    // Hero enters house safely
+    if (this.runnerCharWrap) {
+      this.runnerCharWrap.classList.add('is-entering-house');
+    }
+
+    // Witch gets left behind & crashes
+    if (this.runnerWitchWrap) {
+      this.targetWitchDistance = -220;
+      this.runnerWitchWrap.style.left = '-220px';
+    }
+
+    if (this.runnerDashEffect) {
+      this.runnerDashEffect.textContent = '🏰 과자집 도착! 안전하게 대피합니다!';
+      this.runnerDashEffect.classList.remove('hidden');
+    }
+
+    setTimeout(() => {
+      soundEngine.playCompleteLine();
+      this.stopTimer();
+      this.modalTitle.textContent = '🏰 과자집 대피 성공! 완주 축하합니다! 🎉';
+      this.resCPM.textContent = `${Math.floor(this.runnerDistance)} m`;
+      this.resMaxCPM.textContent = `${this.runnerScore} 점 (${this.runnerMaxCombo}x 최고 콤보)`;
+      this.resAcc.textContent = `${this.statAcc.textContent} %`;
+      this.resTime.textContent = this.statTime.textContent;
+      this.resultModal.classList.remove('hidden');
+    }, 1500);
   }
 
   beginJellyDash() {
@@ -1344,16 +1538,17 @@ class HancomTajaApp {
 
   setRunnerFallen(fallen) {
     if (this.runnerFallen === fallen) return;
-    if (this.isGameOver || this.runnerWorldChanging) return;
+    if (this.isGameOver || this.runnerWorldChanging || this.isEnteringHouse) return;
 
     this.runnerFallen = fallen;
     if (!this.runnerCharWrap) return;
 
     if (fallen) {
+      this.isRunnerTyping = false;
       soundEngine.playCrash();
       this.runnerCombo = 0;
       this.updateRunnerHud();
-      this.runnerCharWrap.classList.remove('is-dashing', 'is-getting-up', 'is-hit');
+      this.runnerCharWrap.classList.remove('is-dashing', 'is-getting-up', 'is-hit', 'is-running', 'is-idle', 'is-eating');
       this.runnerCharWrap.classList.add('is-fallen');
       if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-hit.png';
       if (this.runnerCrashEffect) {
@@ -1367,15 +1562,16 @@ class HancomTajaApp {
     this.runnerCharWrap.classList.add('is-getting-up');
     setTimeout(() => {
       if (this.runnerCharWrap) this.runnerCharWrap.classList.remove('is-getting-up');
-    }, 350);
+    }, 320);
     if (this.runnerCrashEffect) this.runnerCrashEffect.classList.add('hidden');
-    if (this.runnerChar) this.runnerChar.src = this.cookieFrames[this.cookieFrame];
+    if (this.runnerChar) this.runnerChar.src = 'assets/runner/gretel-run-1.png';
   }
 
   spawnRunnerJellyTrail() {
-    if (this.isGameOver || this.currentMode !== 'runner' || this.runnerDashing || this.runnerWorldChanging || this.runnerFallen) return;
+    if (this.isGameOver || this.currentMode !== 'runner' || this.runnerDashing || this.runnerWorldChanging || this.runnerFallen || this.isEnteringHouse) return;
+    if (!this.isRunnerTyping) return; // Only spawn new snacks while actively running
     if (!this.runnerJellyTrack || !this.runnerWorld) return;
-    if (this.runnerJellies.length > 22) return;
+    if (this.runnerJellies.length > 20) return;
 
     const kinds = [
       'assets/runner/snack-lollipop.png',
@@ -1388,8 +1584,8 @@ class HancomTajaApp {
     const count = 3 + Math.floor(Math.random() * 3);
     
     // Bottom ground lane placement: directly along Gretel's running path
-    const groundLaneY = worldH - 100 + (Math.random() * 12 - 6);
-    const speed = 3.2 + Math.min(2.4, this.runnerCombo * 0.18) + this.runnerStageIndex * 0.28;
+    const groundLaneY = worldH - 100 + (Math.random() * 10 - 5);
+    const speed = 3.2 + Math.min(2.2, this.runnerCombo * 0.16) + this.runnerStageIndex * 0.25;
 
     for (let i = 0; i < count; i++) {
       const el = document.createElement('img');
@@ -1426,33 +1622,33 @@ class HancomTajaApp {
     }
   }
 
-  updateRunnerJellies() {
+  updateRunnerJellies(isTypingActive) {
     if (!this.runnerJellies) return;
-    const scroll = this.runnerDashing ? 9.5 : 3.2;
 
-    // Gretel is at left: 8% (roughly x = 60 ~ 110px)
+    // Snacks move only when player is actively running
+    if (!isTypingActive && !this.runnerDashing) {
+      return;
+    }
+
+    const scroll = this.runnerDashing ? 9.5 : 3.5;
     const heroX = 85;
 
     for (let i = this.runnerJellies.length - 1; i >= 0; i--) {
       const j = this.runnerJellies[i];
-      j.x -= j.speed || scroll;
+      j.x -= (j.speed || scroll);
       if (j.el) {
         j.el.style.left = `${j.x}px`;
         j.el.style.top = `${j.y}px`;
       }
 
-      // Check if Gretel runs into the sweet snack on the ground (Cookie Run magnetic eating)
-      if (!j.eaten && !this.runnerFallen && j.x <= heroX + 40 && j.x >= heroX - 25) {
+      // Check if Gretel reaches snack ONLY while running/typing (never while idle or fallen)
+      if (!j.eaten && isTypingActive && !this.runnerFallen && !this.isEnteringHouse && j.x <= heroX + 44 && j.x >= heroX - 25) {
         j.eaten = true;
         if (j.el) {
           j.el.classList.add('is-eaten');
           this.spawnJellySparkleBurst(j.x, j.y);
-          if (this.runnerCharWrap) {
-            this.runnerCharWrap.classList.add('is-nomming');
-            setTimeout(() => {
-              if (this.runnerCharWrap) this.runnerCharWrap.classList.remove('is-nomming');
-            }, 180);
-          }
+          this.triggerGretelEatMotion();
+
           setTimeout(() => {
             if (j.el) j.el.remove();
           }, 380);

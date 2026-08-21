@@ -425,6 +425,61 @@ body {
   box-shadow: 0 0 16px rgba(2, 132, 199, 0.18);
 }
 
+/* Korean Literature Manuscript (원고지 감성) Styling */
+.view-stage.is-literature-theme .typing-header-card {
+  background: #FFFDF9;
+  border: 1.5px solid #E6DCB8;
+  color: #451A03;
+}
+
+.view-stage.is-literature-theme .sentence-progress {
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+.view-stage.is-literature-theme .typing-board {
+  background-color: #FFFDF9;
+  border: 1.5px solid #E6DCB8;
+  box-shadow: 0 8px 24px rgba(180, 83, 9, 0.06);
+}
+
+.view-stage.is-literature-theme .line-block {
+  background-color: #FAF5EB;
+  border: 1.5px solid #EADBCE;
+  font-family: 'Noto Serif KR', 'Batang', serif;
+  color: #292524;
+  letter-spacing: 0.8px;
+}
+
+.view-stage.is-literature-theme .line-block.active {
+  background: #FFFBEB;
+  border: 2px solid #D97706;
+  box-shadow: 0 0 18px rgba(217, 119, 6, 0.15);
+}
+
+.view-stage.is-literature-theme .target-text-display span.correct {
+  color: #15803D;
+  font-weight: 800;
+}
+
+.view-stage.is-literature-theme .target-text-display span.current {
+  background-color: #FEF08A;
+  color: #854D0E;
+}
+
+.view-stage.is-literature-theme .user-input-box {
+  background: #FFFFFF;
+  border: 2px solid #FCD34D;
+  font-family: 'Noto Serif KR', 'Batang', serif;
+  color: #1C1917;
+}
+
+.view-stage.is-literature-theme .user-input-box:focus {
+  border-color: #D97706;
+  box-shadow: 0 0 18px rgba(217, 119, 6, 0.2);
+}
+
 /* Keyboard Section */
 .keyboard-section {
   background-color: #FFFFFF;
@@ -529,7 +584,7 @@ body {
 .wg-bg {
   position: absolute;
   inset: 0;
-  background-image: url("assets/game/bg-space.png");
+  background-image: url("assets/game/bg-space.jpg");
   background-size: cover;
   background-position: center;
   z-index: 1;
@@ -587,8 +642,11 @@ body {
 }
 
 .falling-area {
-  flex: 1;
-  position: relative;
+  position: absolute;
+  top: 54px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
   z-index: 2;
 }
@@ -604,16 +662,16 @@ body {
 
 .falling-word {
   position: absolute;
-  width: 84px;
-  height: 84px;
+  width: 104px;
+  height: 104px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
   text-align: center;
-  background-size: contain;
+  background-size: 68px 68px;
   background-repeat: no-repeat;
-  background-position: center 6px;
+  background-position: center 4px;
   background-color: transparent;
   pointer-events: none;
   will-change: transform, filter;
@@ -621,20 +679,47 @@ body {
   z-index: 4;
 }
 
+.falling-word .word-icon-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 14px rgba(56, 189, 248, 0.6));
+  margin-bottom: 2px;
+  animation: spaceEmojiWobbleFloat 2.4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes spaceEmojiWobbleFloat {
+  0% {
+    transform: translateY(0px) rotate(-3deg) scale(1);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 12px rgba(56, 189, 248, 0.55));
+  }
+  50% {
+    transform: translateY(-6px) rotate(1deg) scale(1.06);
+    filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 18px rgba(253, 224, 71, 0.65));
+  }
+  100% {
+    transform: translateY(0px) rotate(3deg) scale(1);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 14px rgba(244, 63, 94, 0.6));
+  }
+}
+
 .falling-word .word-badge {
   background: rgba(15, 23, 42, 0.92);
-  border: 2px solid #FDE047;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-  border-radius: 10px;
-  padding: 2px 8px;
+  border: 2px solid #38BDF8;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85), 0 0 12px rgba(56, 189, 248, 0.5);
+  border-radius: 14px;
+  padding: 3px 12px;
   color: #FFFFFF;
-  font-size: 0.92rem;
+  font-size: 1.02rem;
   font-weight: 900;
   line-height: 1.2;
   white-space: nowrap;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
-  margin-bottom: -4px;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  margin-bottom: -3px;
+  backdrop-filter: blur(8px);
+  transition: all 0.15s ease;
 }
 
 .falling-word.skin-ufo {
@@ -662,14 +747,15 @@ body {
 }
 
 .falling-word.targeted {
-  filter: drop-shadow(0 0 16px #FDE047) drop-shadow(0 0 24px #F43F5E);
+  filter: drop-shadow(0 0 18px #FDE047) drop-shadow(0 0 28px #F43F5E);
 }
 
 .falling-word.targeted .word-badge {
   background: #E11D48;
   border-color: #FEF08A;
   color: #FEF08A;
-  box-shadow: 0 0 14px rgba(254, 240, 138, 0.8);
+  box-shadow: 0 0 18px rgba(254, 240, 138, 0.9);
+  transform: scale(1.08);
 }
 
 .falling-word.is-destroyed {
@@ -781,119 +867,224 @@ body {
 }
 
 /* =========================================
-   Integrated Torongi Spaceship Cockpit Console
+/* =========================================
+   Starfighter Combat Spaceship Input Console
    ========================================= */
-.wg-cockpit-console {
-  position: relative;
+.wg-spaceship-console {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
-  padding: 0 20px 14px;
+  max-width: 680px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+  transition: transform 0.15s ease;
+}
+
+.wg-spaceship-console.is-shooting {
+  animation: spaceshipConsoleRecoil 0.28s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes spaceshipConsoleRecoil {
+  0% { transform: translateX(-50%) translateY(0); }
+  30% { transform: translateX(-50%) translateY(8px) scale(0.98); }
+  100% { transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* Wing Armor & Plasma Laser Cannon */
+.wg-ship-wing {
+  position: relative;
+  width: 70px;
+  height: 68px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-.wg-pilot-torongi {
-  position: relative;
-  width: 86px;
-  height: 86px;
-  margin-bottom: -28px;
-  z-index: 12;
-  animation: torongiCockpitFloat 2.4s ease-in-out infinite;
+  justify-content: flex-end;
   pointer-events: none;
+  z-index: 12;
 }
 
-.wg-pilot-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 14px rgba(56, 189, 248, 0.6));
-  transition: transform 0.1s ease;
+.wg-ship-wing.wing-left {
+  margin-right: -14px;
 }
 
-.wg-cockpit-console.is-shooting .wg-pilot-img {
-  animation: torongiRecoil 0.25s ease-out;
+.wg-ship-wing.wing-right {
+  margin-left: -14px;
 }
 
-.wg-cannon-nozzle {
+.wg-wing-plate {
   position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 6px;
+  width: 64px;
+  height: 48px;
+  background: linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%);
+  border: 2px solid #38BDF8;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.35);
+}
+
+.wing-left .wg-wing-plate {
+  border-radius: 20px 4px 12px 20px;
+  transform: skewX(-14deg) rotate(-4deg);
+}
+
+.wing-right .wg-wing-plate {
+  border-radius: 4px 20px 20px 12px;
+  transform: skewX(14deg) rotate(4deg);
+}
+
+/* Heavy Laser Turrets */
+.wg-laser-turret {
+  position: relative;
+  width: 24px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 15;
+}
+
+.turret-barrel {
   width: 12px;
-  height: 12px;
+  height: 38px;
+  background: linear-gradient(180deg, #38BDF8 0%, #1E293B 60%, #0F172A 100%);
+  border: 2px solid #7DD3FC;
+  border-radius: 6px 6px 2px 2px;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+
+.turret-muzzle {
+  position: absolute;
+  top: -6px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: radial-gradient(circle, #FFFFFF 0%, #38BDF8 50%, #F43F5E 100%);
-  box-shadow: 0 0 12px #38BDF8;
-  opacity: 0.8;
+  box-shadow: 0 0 14px #38BDF8, 0 0 20px #F43F5E;
+  opacity: 0.85;
 }
 
-.wg-cockpit-console.is-shooting .wg-cannon-nozzle {
-  animation: muzzleFlash 0.25s ease-out;
+.wg-spaceship-console.is-shooting .turret-muzzle {
+  animation: turretFireMuzzleFlash 0.28s ease-out;
 }
 
-@keyframes muzzleFlash {
-  0% { transform: translateX(-50%) scale(1); opacity: 1; filter: brightness(2); }
-  40% { transform: translateX(-50%) scale(3.5); opacity: 1; box-shadow: 0 0 30px #F43F5E; }
-  100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+@keyframes turretFireMuzzleFlash {
+  0% { transform: scale(1); opacity: 1; filter: brightness(2); }
+  35% { transform: scale(4.5); opacity: 1; box-shadow: 0 0 35px #38BDF8, 0 0 50px #F43F5E; }
+  100% { transform: scale(1); opacity: 0.85; }
 }
 
-@keyframes torongiCockpitFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+.wg-wing-thruster {
+  position: absolute;
+  bottom: -4px;
+  width: 14px;
+  height: 6px;
+  background: #F43F5E;
+  border-radius: 4px;
+  box-shadow: 0 0 12px #F43F5E;
+  animation: thrusterGlow 1.2s ease-in-out infinite alternate;
 }
 
-@keyframes torongiRecoil {
-  0% { transform: translateY(0) scale(1); }
-  35% { transform: translateY(6px) scale(0.92, 1.08); }
-  100% { transform: translateY(0) scale(1); }
+@keyframes thrusterGlow {
+  0% { opacity: 0.6; transform: scaleX(0.8); }
+  100% { opacity: 1; transform: scaleX(1.3); }
 }
 
+/* Central Spaceship Cockpit Hull */
 .wg-ship-hull {
   position: relative;
-  max-width: 580px;
-  width: 100%;
-  background: linear-gradient(180deg, #1E1B4B 0%, #0F172A 100%);
+  flex: 1;
+  max-width: 540px;
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.96) 0%, rgba(15, 23, 42, 0.98) 100%);
   border: 3px solid #38BDF8;
   border-radius: 28px;
-  padding: 10px 18px 12px;
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.4), inset 0 0 18px rgba(30, 27, 75, 0.8);
+  padding: 8px 18px 10px;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.45), inset 0 0 20px rgba(30, 27, 75, 0.9);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   z-index: 11;
+  pointer-events: auto;
+  backdrop-filter: blur(14px);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.wg-cockpit-console.is-aiming .wg-ship-hull {
+.wg-spaceship-console.is-aiming .wg-ship-hull {
   border-color: #F43F5E;
-  box-shadow: 0 0 28px rgba(244, 63, 94, 0.6), inset 0 0 18px rgba(225, 29, 72, 0.35);
+  box-shadow: 0 0 32px rgba(244, 63, 94, 0.65), inset 0 0 20px rgba(225, 29, 72, 0.4);
 }
 
-.wg-hull-thrusters {
+.wg-cockpit-canopy {
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 6px;
 }
 
-.thruster-dot {
-  width: 8px;
-  height: 8px;
+.canopy-hud-target {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #38BDF8;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+}
+
+.canopy-reactor-status {
+  display: flex;
+  gap: 6px;
+}
+
+.reactor-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #FDE047;
-  box-shadow: 0 0 8px #FDE047;
-  animation: thrusterPulse 1.2s ease-in-out infinite alternate;
+  background: #38BDF8;
+  box-shadow: 0 0 8px #38BDF8;
 }
 
-.thruster-dot:nth-child(2) { animation-delay: 0.2s; background: #38BDF8; box-shadow: 0 0 8px #38BDF8; }
-.thruster-dot:nth-child(3) { animation-delay: 0.4s; background: #F43F5E; box-shadow: 0 0 8px #F43F5E; }
-.thruster-dot:nth-child(4) { animation-delay: 0.6s; background: #FDE047; box-shadow: 0 0 8px #FDE047; }
+.reactor-dot:nth-child(2) { background: #FDE047; box-shadow: 0 0 8px #FDE047; }
+.reactor-dot:nth-child(3) { background: #F43F5E; box-shadow: 0 0 8px #F43F5E; }
 
-@keyframes thrusterPulse {
-  0% { transform: scale(0.8); opacity: 0.6; }
-  100% { transform: scale(1.3); opacity: 1; }
+.wg-input-cockpit-frame {
+  width: 100%;
+}
+
+.wg-ship-input {
+  width: 100%;
+  padding: 10px 18px;
+  font-size: 1.25rem;
+  font-family: var(--font-kr);
+  font-weight: 800;
+  border: 2px solid rgba(56, 189, 248, 0.45);
+  border-radius: 18px;
+  background: rgba(2, 6, 23, 0.94);
+  color: #FFFFFF;
+  text-align: center;
+  outline: none;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.75);
+  transition: all 0.2s ease;
+}
+
+.wg-ship-input:focus {
+  border-color: #38BDF8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5), inset 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.wg-hull-bottom-core {
+  width: 80%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #38BDF8 50%, transparent 100%);
+  box-shadow: 0 0 8px #38BDF8;
+  opacity: 0.7;
 }
 
 .wg-ship-input {
@@ -1065,7 +1256,16 @@ body {
   background-size: auto 100%;
   background-position: 0 0;
   animation: crScrollBg 26s linear infinite;
+  animation-play-state: paused;
   transition: opacity 0.35s ease;
+}
+
+.cr-world.is-running .cr-bg {
+  animation-play-state: running;
+}
+
+.cr-world.is-idle .cr-bg {
+  animation-play-state: paused;
 }
 
 .cr-bg.is-fading {
@@ -1074,6 +1274,7 @@ body {
 
 .cr-world.is-dashing .cr-bg {
   animation-duration: 8s;
+  animation-play-state: running;
 }
 
 .cr-ground {
@@ -1218,12 +1419,181 @@ body {
   animation: crPop 1.4s ease-out;
 }
 
+.cr-witch-wrap {
+  position: absolute;
+  left: -130px;
+  bottom: 42px;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 0.3s cubic-bezier(0.2, 0.85, 0.25, 1);
+  will-change: left, transform;
+  animation: witchBroomHover 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes witchBroomHover {
+  0% { transform: translateY(0px) rotate(-4deg); }
+  100% { transform: translateY(-16px) rotate(4deg); }
+}
+
+.cr-witch {
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(168, 85, 247, 0.7));
+  transform: scaleX(1);
+}
+
+.witch-cast-smoke {
+  position: absolute;
+  bottom: 8px;
+  left: -20px;
+  width: 48px;
+  height: 26px;
+  background: radial-gradient(ellipse, rgba(192, 132, 252, 0.85), transparent 70%);
+  filter: blur(5px);
+  animation: witchSmoke 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes witchSmoke {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0.95); }
+}
+
+.witch-speech-bubble {
+  position: absolute;
+  top: -38px;
+  left: 10px;
+  background: rgba(88, 28, 135, 0.94);
+  color: #FDE047;
+  font-family: var(--font-kr);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1.5px solid #C084FC;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.45);
+  animation: witchTauntPop 0.8s ease-in-out infinite alternate;
+  z-index: 20;
+}
+
+@keyframes witchTauntPop {
+  0% { transform: scale(0.95); }
+  100% { transform: scale(1.06); }
+}
+
+/* Gretel Head Sparkle Burst (Replaces "냠냠!" bubble) */
+.runner-sparkle-container {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 60px;
+  pointer-events: none;
+  z-index: 35;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.runner-sparkle-star {
+  position: absolute;
+  font-size: 1.3rem;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px #FDE047) drop-shadow(0 0 14px #F59E0B);
+  animation: sparkleRiseFloat 0.55s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+}
+
+@keyframes sparkleRiseFloat {
+  0% {
+    opacity: 0;
+    transform: translate(0, 10px) scale(0.3) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(var(--tx, 0px), var(--ty, -20px)) scale(1.35) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--tx, 0px) * 1.4), calc(var(--ty, -20px) - 24px)) scale(0.5) rotate(90deg);
+  }
+}
+
+.cr-goal-house-wrap {
+  position: absolute;
+  right: -260px;
+  bottom: 24px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: right 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cr-goal-house-wrap.is-visible {
+  right: 40px;
+}
+
+.cr-goal-house-img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
+}
+
+.cr-house-door-light {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 64px;
+  background: radial-gradient(circle, #FDE047 30%, rgba(245, 158, 11, 0.4) 70%, transparent 100%);
+  filter: blur(6px);
+  animation: doorGlow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes doorGlow {
+  0% { opacity: 0.6; transform: translateX(-50%) scale(0.9); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+}
+
+.cr-safe-badge {
+  position: absolute;
+  top: -12px;
+  background: #16A34A;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 900;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 2px solid #86EFAC;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.5);
+  white-space: nowrap;
+  animation: safeBadgePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes safeBadgePop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.cr-hero-wrap.is-entering-house {
+  transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.25, 1), opacity 0.8s ease;
+  transform: translateX(65vw) scale(0.65) !important;
+  opacity: 0.15;
+}
+
 .cr-hero-wrap.is-hit .cr-hero {
   animation: crHit 0.45s ease-in-out;
 }
 
 .cr-hero-wrap.is-fallen .cr-hero {
-  transform: translate(4px, 12px) rotate(14deg);
+  transform: translate(4px, 14px) rotate(14deg);
   transform-origin: 50% 90%;
 }
 
@@ -1232,7 +1602,7 @@ body {
 }
 
 @keyframes crGetUp {
-  0% { transform: translate(4px, 12px) rotate(14deg); }
+  0% { transform: translate(4px, 14px) rotate(14deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
@@ -1244,12 +1614,153 @@ body {
 }
 
 .cr-hero {
-  width: 110px;
-  height: 110px;
+  width: 122px;
+  height: 122px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.38));
   image-rendering: auto;
-  transition: transform 0.25s ease;
+  transition: transform 0.12s ease-out;
+  will-change: transform;
+  transform-origin: 45% 95%;
+}
+
+/* Realistic Ground Contact Shadow */
+.cr-hero-shadow {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 82px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 75%);
+  pointer-events: none;
+  z-index: 5;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* 1. Idle Breathing State (When player is NOT typing) */
+.cr-hero-wrap.is-idle:not(.is-fallen):not(.is-entering-house) .cr-hero {
+  animation: heroIdleBreathe 2.4s ease-in-out infinite alternate;
+}
+
+.cr-hero-wrap.is-idle .cr-hero-shadow {
+  animation: heroIdleShadow 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes heroIdleBreathe {
+  0% {
+    transform: translateY(0px) scale(1, 1);
+  }
+  50% {
+    transform: translateY(-2.5px) scale(0.99, 1.02);
+  }
+  100% {
+    transform: translateY(0px) scale(1.01, 0.99);
+  }
+}
+
+@keyframes heroIdleShadow {
+  0%, 100% {
+    transform: translateX(-50%) scale(1, 1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.94, 0.94);
+    opacity: 0.55;
+  }
+}
+
+/* 2. Realistic Physics-based Human Running Cycle (When player is typing) */
+.cr-hero-wrap.is-running:not(.is-fallen):not(.is-entering-house):not(.is-eating) .cr-hero {
+  animation: heroRealisticHumanStride 0.44s cubic-bezier(0.38, 0.05, 0.62, 0.95) infinite;
+}
+
+.cr-hero-wrap.is-running:not(.is-fallen):not(.is-entering-house) .cr-hero-shadow {
+  animation: heroRealisticShadow 0.44s cubic-bezier(0.38, 0.05, 0.62, 0.95) infinite;
+}
+
+@keyframes heroRealisticHumanStride {
+  0% {
+    /* Left foot strike / ground contact (slight compression/squash) */
+    transform: translateY(0px) rotate(1deg) scale(1.02, 0.96);
+  }
+  20% {
+    /* Push-off & forward acceleration */
+    transform: translateY(-5px) rotate(3.5deg) scale(0.98, 1.02);
+  }
+  48% {
+    /* Airborne flight apex: feet off the ground */
+    transform: translateY(-11px) rotate(2deg) scale(1, 1);
+  }
+  68% {
+    /* Right foot strike / opposite ground contact (squash) */
+    transform: translateY(0px) rotate(-1deg) scale(1.02, 0.96);
+  }
+  86% {
+    /* Opposite push-off */
+    transform: translateY(-4px) rotate(2.5deg) scale(0.99, 1.02);
+  }
+  100% {
+    /* Reconnect to left strike */
+    transform: translateY(0px) rotate(1deg) scale(1.02, 0.96);
+  }
+}
+
+@keyframes heroRealisticShadow {
+  0%, 68%, 100% {
+    /* Firm ground contact: dark & wide */
+    transform: translateX(-50%) scale(1.12, 1.15);
+    opacity: 0.8;
+  }
+  48% {
+    /* Mid-air flight: softer & smaller */
+    transform: translateX(-50%) scale(0.85, 0.85);
+    opacity: 0.42;
+  }
+}
+
+/* 3. Dashing Fast Stride */
+.cr-hero-wrap.is-dashing:not(.is-fallen):not(.is-entering-house) .cr-hero {
+  animation: heroRealisticDashStride 0.28s cubic-bezier(0.38, 0.05, 0.62, 0.95) infinite;
+}
+
+@keyframes heroRealisticDashStride {
+  0% {
+    transform: translateY(0px) rotate(4deg) scale(1.05, 0.95);
+  }
+  25% {
+    transform: translateY(-8px) rotate(6.5deg) scale(0.98, 1.03);
+  }
+  50% {
+    transform: translateY(-14px) rotate(5deg) scale(1.01, 1.01);
+  }
+  75% {
+    transform: translateY(-4px) rotate(2.5deg) scale(1.03, 0.97);
+  }
+  100% {
+    transform: translateY(0px) rotate(4deg) scale(1.05, 0.95);
+  }
+}
+
+/* 4. Cookie Eating Cheer */
+.cr-hero-wrap.is-eating .cr-hero {
+  animation: heroEatCheer 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes heroEatCheer {
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  40% {
+    transform: translateY(-10px) rotate(-2deg) scale(1.06, 1.06);
+  }
+  70% {
+    transform: translateY(-4px) rotate(1deg) scale(1.02, 1.02);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
 }
 
 /* Gretel Cute Speech Bubble (Floating Upright above character) */
